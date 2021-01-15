@@ -2360,12 +2360,13 @@ body,html{
   margin-bottom: auto;
 }
 .card{
-  height:985px;
+  height:auto;
   width: 25%;
   border-radius: 0px !important;
   background-color: rgba(0,0,0,0.4) !important;
 }
 .msg_card_body{
+  height: 10px;
   overflow-y: auto;
 }
 .card-header{

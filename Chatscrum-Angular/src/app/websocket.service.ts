@@ -179,7 +179,7 @@ export class WebsocketService {
 	// }
 
 	public openWebSocket() {
-		this.webSocket = new WebSocket(chat_ws_url);
+		this.webSocket = new WebSocket(this.chat_ws_url);
 
 		this.webSocket.onopen = (event) => {
 			console.log('Opened: ', event);
