@@ -14,6 +14,7 @@ export class WebsocketService {
 
 	public ws: any;
 	public ws_url = environment.ws_url;
+	public chat_ws_url = environment.chat_ws_url;
 	public messages = [];
 	public chat_text: String;
 	public all_goals = new BehaviorSubject([]);
@@ -178,9 +179,7 @@ export class WebsocketService {
 	// }
 
 	public openWebSocket() {
-		this.webSocket = new WebSocket(
-			'wss://9oaktw3efg.execute-api.us-east-2.amazonaws.com/chat'
-		);
+		this.webSocket = new WebSocket(chat_ws_url);
 
 		this.webSocket.onopen = (event) => {
 			console.log('Opened: ', event);

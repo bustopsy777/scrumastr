@@ -8,6 +8,7 @@ export const environment = {
 	domain_name: 'api.chatscrum.com',
 	slack_client_id: '1047148162967.1067254009940',
 	ws_url: 'wss://9zvbc650m4.execute-api.us-east-2.amazonaws.com/chatscrum/',
+	chat_ws_url: 'wss://9oaktw3efg.execute-api.us-east-2.amazonaws.com/chat',
 };
 
 /*
