@@ -103,7 +103,6 @@ export class ScrumboardComponent implements OnInit, AfterViewInit, OnDestroy {
 	public new_role;
 	public historyForUser;
 	public historyForUserRole;
-	public messages = [];
 	public uses_slack = sessionStorage.getItem('user_slack');
 	public imageUploaded;
 	public mention = { item: '' };
@@ -174,10 +173,6 @@ export class ScrumboardComponent implements OnInit, AfterViewInit, OnDestroy {
 		this.webSocketService.closeWebSocket();
 	}
 
-	// websocket chat classes
-
-	// websocket chat classes end
-
 	ngAfterViewInit(): void {
 		let observer = new MutationObserver((mutations) => {
 			mutations.forEach((mutation) => {
@@ -215,6 +210,7 @@ export class ScrumboardComponent implements OnInit, AfterViewInit, OnDestroy {
 		modal.style.display = 'none';
 	}
 
+	// sending a message with slack
 	sendAMessage(input) {
 		if (!this.sendable) {
 			this.sendable = true;
@@ -223,7 +219,23 @@ export class ScrumboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
 		if (this.sendable && !this.userListOpened) {
 			this.oldsendMessage();
-			input.value = '';
+			input.value.chat_text = '';
+		}
+	}
+
+	oldsendMessage() {
+		if (this.chat_text) {
+			let context = {
+				action: 'sendMessage',
+				project_id: String(sessionStorage.getItem('project_id')),
+				username: String(sessionStorage.getItem('realname')),
+				timestamp: this.getCurrentTime(),
+				message: this.chat_text,
+				token: sessionStorage.getItem('ws_token'),
+			};
+
+			this.ws.send(JSON.stringify(context));
+			this.chat_text = '';
 		}
 	}
 
@@ -1900,22 +1912,6 @@ export class ScrumboardComponent implements OnInit, AfterViewInit, OnDestroy {
 	autoScroll() {
 		window.scrollBy(0, 1);
 		let scrolldelay = setTimeout('autoscroll()', 10);
-	}
-
-	oldsendMessage() {
-		if (this.chat_text) {
-			let context = {
-				action: 'sendMessage',
-				project_id: String(sessionStorage.getItem('project_id')),
-				username: String(sessionStorage.getItem('realname')),
-				timestamp: this.getCurrentTime(),
-				message: this.chat_text,
-				token: sessionStorage.getItem('ws_token'),
-			};
-
-			this.ws.send(JSON.stringify(context));
-			this.chat_text = '';
-		}
 	}
 
 	sendMessage(sendForm: NgForm) {

@@ -2360,10 +2360,12 @@ body,html{
   margin-bottom: auto;
 }
 .card{
-  height:auto;
   width: 25%;
   border-radius: 0px !important;
   background-color: rgba(0,0,0,0.4) !important;
+  position: absolute;
+  height: 95vh;
+  right: 0;
 }
 .msg_card_body{
   height: 10px;

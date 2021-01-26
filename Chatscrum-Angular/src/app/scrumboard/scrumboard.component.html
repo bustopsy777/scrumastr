@@ -1220,7 +1220,7 @@
               <p>Messages</p>
           </div>
           <div class="card-body msg_card_body" #scrollMe [scrollTop]="scrollMe.scrollHeight">
-                  <div *ngFor="let message of webSocketService.messageData">
+                  <div *ngFor="let message of my_messages">
                       <div class="d-flex justify-content-start mb-4" *ngIf= "message.username !== username">
                           <div class="img_cont_msg">
                               <img src="https://static.turbosquid.com/Preview/001292/481/WV/_D.jpg" alt="" class="rounded-circle user_img_msg">
@@ -1241,8 +1241,9 @@
           <div class="card-footer">
               <form #sendForm = "ngForm">
                   <div class="input-group">
-                      <textarea name="chat_text" class="form-control type_msg" placeholder="Type your message..." ngModel></textarea>
-                      <div class="input-group-append" (click)="sendMessage(sendForm)">
+                      <!-- <textarea name="chat_text" class="form-control type_msg" placeholder="Type your message..." ngModel></textarea> -->
+                      <textarea class="form-control type_msg" [mention]="listUsers" [mentionConfig]="mentionConfig" [(mentioned-user)]="mention.item" placeholder="Send a message" #chattext= "ngModel" [(ngModel)]= "chat_text" name=chattext></textarea>
+                      <div class="input-group-append" (click)="sendAMessage(sendForm)">
                           <span class="input-group-text send_btn"><i class="fas fa-location-arrow"></i></span>
                       </div>
                   </div>

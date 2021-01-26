@@ -149,33 +149,10 @@ export class WebsocketService {
 
 	// }
 
-	// getCurrentTime() {
-	//   let currentDate = new Date();
-	//   return formatDate(currentDate, "h:mm a . dd-MM-yyyy", 'en-US');
-	//   //return new Date().toLocaleTimeString().replace(/([\d]+:[\d]{2})(:[\d]{2})(.*)/, "$1$3");
-	// }
-
 	// autoScroll() {
 	//   window.scrollBy(0,1);
 	//   let scrolldelay = setTimeout('autoscroll()', 10);
 	// }
-
-	// sendMessage() {
-	//   if (this.chat_text) {
-	//     let context = {
-	//       "action": "sendMessage",
-	//       "project_name": String(sessionStorage.getItem('project_name')),
-	//       "username": String(sessionStorage.getItem('realname')),
-	//       "timestamp": this.getCurrentTime(),
-	//       "message": this.chat_text,
-	//       "token": sessionStorage.getItem('ws_token')
-
-	//     }
-
-	//     this.ws.send(JSON.stringify(context));
-	//     this.chat_text = '';
-
-	//   }
 	// }
 
 	public openWebSocket() {

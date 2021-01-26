@@ -104,31 +104,31 @@ WSGI_APPLICATION = 'ScrumMaster.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
-'''
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'chatscrum',
-        'USER': 'usman',
-        'PASSWORD': 'usman123',
-        'OPTIONS': {
-            'raise_on_warnings': False,
-            'use_pure': True
-        }
+        'USER': 'ogunsola',
+        'PASSWORD': 'password',
+        # 'OPTIONS': {
+        #     'raise_on_warnings': False,
+        #     'use_pure': True
+        # }
     }
 }
-'''
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'chat',
-        'USER': 'linuxjobber',
-        'PASSWORD': '8iu7*IU&',
-        'HOST': 'mysql-6cf74b5d8-br8kz',
-        'PORT': '3306'
 
-    }
-}
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 'chat',
+#         'USER': 'linuxjobber',
+#         'PASSWORD': '8iu7*IU&',
+#         'HOST': 'mysql-6cf74b5d8-br8kz',
+#         'PORT': '3306'
+
+#     }
+# }
 
 # Email backend
 

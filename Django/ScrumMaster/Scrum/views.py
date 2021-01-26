@@ -56,7 +56,7 @@ def connect(request):
     body = _parse_body(request.body)
     connection_id = body['connectionId']
     print('connect successful')
-    # Connection(connection_id=connection_id, project_name="TestProj").save()
+    Connection(connection_id=connection_id, project=ScrumProject.objects.get(name="linuxjobber")).save()
 
     return JsonResponse(
         {'message': 'connect successfully'}, status=200
@@ -1824,7 +1824,7 @@ class Events(APIView):
         print("========================================================================")
 
 
-# =========================================URL verification challenge===============================================================
+        # ==============================URL verification challenge===============================================================
         if post_data.get('type') == 'url_verification':
             print("===================================url_verification===========================================================")
             print(post_data["challenge"])
