@@ -33,6 +33,7 @@ import { Template } from '@angular/compiler/src/render3/r3_ast';
 import { template } from '@angular/core/src/render3';
 import { NgForm } from '@angular/forms';
 import { ChatMessageDto } from '../chatMessageDto';
+import { data } from 'jquery';
 
 @Component({
 	selector: 'app-scrumboard',
@@ -1536,7 +1537,14 @@ export class ScrumboardComponent implements OnInit, AfterViewInit, OnDestroy {
 			this.hours,
 			this.push_id,
 			this.project_id
-		).subscribe();
+		).subscribe(
+			(data) => {
+				console.log(data);
+			},
+			(error) => {
+				console.log(error);
+			}
+		);
 
 		this.getMessages().subscribe(
 			(data) => {
@@ -1583,48 +1591,23 @@ export class ScrumboardComponent implements OnInit, AfterViewInit, OnDestroy {
 			} else {
 				if (this.to_id == '2' && from_id != '3') {
 					this.push_id_form();
-				} else if (
-					this.loggedUserRole == 'Owner' ||
-					this.loggedUserRole == 'Admin' ||
-					this.loggedUserRole == 'Quality Analyst' ||
-					this.loggedUserRole == 'Developer'
-				) {
+				} else {
 					this.dataService
-						.changeGoalOwner(
+						.moveGoalRequest(
 							this.goal_id,
-							'u' +
-								event.container.id.slice(
-									0,
-									event.container.id.indexOf('e')
-								),
+							this.to_id,
+							this.hours,
+							this.push_id,
 							this.project_id
 						)
 						.subscribe(
 							(data) => {
-								console.log('changing');
-								this.NotificationBox(data['message']);
-								this.users = [];
-								this.TFTD = [];
-								this.TFTW = [];
-								this.done = [];
-								this.verify = [];
-								this.filterUsers(data['data']);
 								console.log(data);
 							},
 							(error) => {
 								console.log(error);
-								this.NotificationBox(
-									'Unexpected error!, please try move the task again.'
-								);
 							}
 						);
-					event.item.data['taskFor'] = event.container.id.slice(
-						0,
-						event.container.id.indexOf('e')
-					);
-				} else {
-					// this.processMoveGoalRequest();
-					console.log('object');
 				}
 
 				transferArrayItem(
@@ -1887,18 +1870,23 @@ export class ScrumboardComponent implements OnInit, AfterViewInit, OnDestroy {
 		project_id
 	): Observable<any> {
 		return new Observable((observer) => {
-			const context = {
-				action: 'moveGoal',
-				project_id: project_id,
-				to_id: to_id,
-				username: sessionStorage.getItem('username'),
-				goal_id: goal_id,
-				push_id: push_id,
-				hours: hours,
-				token: sessionStorage.getItem('ws_token'),
-			};
+			this.dataService
+				.moveGoalRequest(
+					this.goal_id,
+					this.to_id,
+					this.hours,
+					this.push_id,
+					this.project_id
+				)
+				.subscribe(
+					(data) => {
+						console.log(data);
+					},
+					(error) => {
+						console.log(error);
+					}
+				);
 
-			this.ws.send(JSON.stringify(context));
 			observer.next('Done');
 		});
 	}
