@@ -25,7 +25,7 @@ export class WebsocketService {
 	messageData: any[] = [];
 
 	constructor() {
-		this.ws = new ReconnectingWebSocket(this.ws_url);
+		// this.ws = new ReconnectingWebSocket(this.ws_url);
 	}
 
 	getProjectGoals(): Observable<any> {
