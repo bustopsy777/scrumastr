@@ -54,7 +54,7 @@ RUN /bin/pip3.6 install django-cors-headers==3.1.0
 RUN /bin/pip3.6 install mysqlclient
 RUN /bin/pip3.6 install mysql-connector-python
 RUN /bin/pip3.6 install djangorestframework-jwt==1.11.0
-RUN /bin/pip3.6 install Pillow channels_redis==2.4.0 slackclient==1.3.0 pymysql
+RUN /bin/pip3.6 install Pillow channels_redis==2.4.0 slackclient pymysql
 RUN /bin/pip3.6 install boto3==1.11.0
 RUN /bin/pip3.6 install django==2.1
 

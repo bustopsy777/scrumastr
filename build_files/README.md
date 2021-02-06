@@ -1,0 +1,1 @@
+copy all the build files into the image build directory. If websocket URL has changed, edit this in the environment.ts file which you just copied. Also edit the"frontend" setting in the settings.py file to match the frontend you are building for. Also ensure that the database details in the settings.py file match your database settings. 
