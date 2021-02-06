@@ -48,6 +48,7 @@ PyMySQL==0.9.3
 pyparsing==2.2.0
 # pypiwin32==223
 python3-openid==3.1.0
+python-decouple
 pytz==2018.4
 # pywin32==224
 redis==2.10.6
