@@ -5,6 +5,3 @@ cd /web/www/Django/ScrumMaster/ && nohup python3.6 manage.py migrate && nohup py
 /bin/chmod -R 777 /run/chatscrumuwsgi/
 /usr/sbin/uwsgi --ini /etc/uwsgi.d/chatscrum.ini
 /bin/chmod -R 777 /run/chatscrumuwsgi/
-~                                                                                                                                                                                              
-~                                             
-

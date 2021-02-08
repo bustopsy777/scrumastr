@@ -42,9 +42,9 @@ RUN  yum clean all;
 
 RUN yum -y install gcc
 
-RUN pip install --upgrade pip && pip install boto && pip install boto3
+RUN pip3.6 install --upgrade pip && pip3.6 install boto && pip3.6 install boto3
 RUN yum -y install https://centos7.iuscommunity.org/ius-release.rpm python36u python36u-devel python36u-pip
-RUN pip install pathlib
+RUN pip3.6 install pathlib
 
 
 RUN /bin/pip3.6 install django==2.1
@@ -54,9 +54,10 @@ RUN /bin/pip3.6 install django-cors-headers==3.1.0
 RUN /bin/pip3.6 install mysqlclient
 RUN /bin/pip3.6 install mysql-connector-python
 RUN /bin/pip3.6 install djangorestframework-jwt==1.11.0
-RUN /bin/pip3.6 install Pillow channels_redis==2.4.0 slackclient pymysql
+RUN /bin/pip3.6 install Pillow channels_redis==2.4.0 slackclient==1.3.0 pymysql
 RUN /bin/pip3.6 install boto3==1.11.0
 RUN /bin/pip3.6 install django==2.1
+RUN /bin/pip3.6 install python-decouple
 
 RUN mkdir -p /web/
 COPY www/ /web/www/
@@ -65,6 +66,7 @@ COPY start.sh /start.sh
 COPY settings.py /web/www/Django/ScrumMaster/ScrumMaster/settings.py
 COPY settings.ini /web/www/Django/ScrumMaster/settings.ini
 COPY Chatscrum-Angular/ /web/Chatscrum-Angular/
+COPY environment.ts /web/Chatscrum-Angular/src/environments/environment.prod.ts
 
 RUN chmod +x /start.sh
 
@@ -72,13 +74,13 @@ RUN yum install -y uwsgi-logger-file uwsgi-plugin-python36u --skip-broken
 
 RUN wget -qO- https://raw.githubusercontent.com/creationix/nvm/v0.33.11/install.sh | bash
 ENV NVM_DIR=/root/.nvm
-RUN . $HOME/.nvm/nvm.sh && nvm install stable
+RUN . $HOME/.nvm/nvm.sh && nvm install 14.13.1
 RUN . $HOME/.nvm/nvm.sh && npm install -g @angular/cli@7.3.9
 RUN git config --global user.email "prosper.sopuruchi@gmail.com"
 RUN git config --global user.name "Prosper Ndubueze"
 
 RUN cd /web/Chatscrum-Angular && . $HOME/.nvm/nvm.sh && npm install
-RUN cd /web/Chatscrum-Angular && . $HOME/.nvm/nvm.sh && ng build --prod --aot
+RUN cd /web/Chatscrum-Angular && . $HOME/.nvm/nvm.sh && npm install ngx-materialize materialize-css@next ng2-dragula rxjs && ng build --prod --aot
 
 RUN mkdir -p /web/Chatscrum-Angular/dist/chatscrum/src/assets/
 RUN yes | cp -r /web/Chatscrum-Angular/dist/chatscrum/assets/ /web/Chatscrum-Angular/dist/chatscrum/src/
