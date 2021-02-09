@@ -111,10 +111,10 @@ WSGI_APPLICATION = 'ScrumMaster.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'chat',
-        'USER': 'linuxjobbermaster',
+        'NAME': 'newcs',
+        'USER': 'linuxjobber',
         'PASSWORD': '1qaz#EDC3edc',
-        'HOST': '54.244.76.22',
+        'HOST': 'wt-mysql',
         'PORT': '3306',
         'OPTIONS': {
             #'raise_on_warnings': False,
