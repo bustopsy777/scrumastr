@@ -49,15 +49,20 @@ then when logged into the MySQL as root user, the following commands (or the equ
 
 `GRANT ALL PRIVILEGES ON *.* TO 'linuxjobber'@'%' ;`
 
-6. Create an account at https://hub.docker.com/ (if necessary) and use those credentials to login to docker (optional step but recommended)
+6. Make a www directory in scrumastr and copy the Django folder and its contents inside www
+
+`mkdir /scrumastr/www`
+`cp -r /scrumastr/Django /scrumastr/www/`
+
+7. Create an account at https://hub.docker.com/ (if necessary) and use those credentials to login to docker (optional step but recommended)
 
 `sudo docker login`
 
-7. Build the image using the docker build command while in the /scrumastr folder. Example:
+8. Build the image using the docker build command while in the /scrumastr folder. Example:
 
 `docker build -t username/chatscrum:example_tag .`
 
-8. Push the image that you just built to your docker hub repository (optional but recommended in case the local image is compromised or is not present)
+9. Push the image that you just built to your docker hub repository (optional but recommended in case the local image is compromised or is not present)
 
 `docker push username/chatscrum:example_tag`
 
