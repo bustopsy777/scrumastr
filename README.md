@@ -52,6 +52,7 @@ then when logged into the MySQL as root user, the following commands (or the equ
 6. Make a www directory in scrumastr and copy the Django folder and its contents inside www
 
 `mkdir /scrumastr/www`
+
 `cp -r /scrumastr/Django /scrumastr/www/`
 
 7. Create an account at https://hub.docker.com/ (if necessary) and use those credentials to login to docker (optional step but recommended)
