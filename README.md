@@ -39,7 +39,7 @@ If the settings.py file is set like this
         'PASSWORD': '8iu7*IU&',
         'HOST': 'mysql-hostname-replace-with-correct-host',
 
-then when logged into the MySQL as root user, the following commands (or the equivalent) need to have been run before chatscrum is deployed:
+*** In the MySQL database you are connecting to, run these commands as root user (or the equivalent) before chatscrum is deployed:
 
 `CREATE DATABASE IF NOT EXISTS chat;`
 
@@ -49,21 +49,15 @@ then when logged into the MySQL as root user, the following commands (or the equ
 
 `GRANT ALL PRIVILEGES ON *.* TO 'linuxjobber'@'%' ;`
 
-6. Make a www directory in scrumastr and copy the Django folder and its contents inside www
-
-`mkdir /scrumastr/www`
-
-`cp -r /scrumastr/Django /scrumastr/www/`
-
-7. Create an account at https://hub.docker.com/ (if necessary) and use those credentials to login to docker (optional step but recommended)
+6. Create an account at https://hub.docker.com/ (if necessary) and use those credentials to login to docker (optional step but recommended)
 
 `sudo docker login`
 
-8. Build the image using the docker build command while in the /scrumastr folder. Example:
+7. Build the image using the docker build command while in the /scrumastr folder. Example:
 
 `docker build -t username/chatscrum:example_tag .`
 
-9. Push the image that you just built to your docker hub repository (optional but recommended in case the local image is compromised or is not present)
+8. Push the image that you just built to your docker hub repository (optional but recommended in case the local image is compromised or is not present)
 
 `docker push username/chatscrum:example_tag`
 
@@ -78,10 +72,17 @@ To deploy the chatscrum docker image in a docker container, follow these steps
 
 `docker run --name cs-name -d -p 5000:5000 -p 5100:5100 --net=chatscrum username/chatscrum:example_tag`
 
-3. Access chatscrum in a web browser at the domain you are using or at the IP address and port (your.chatscrum.com or ipaddress:5100 in a web browser)
-4. Click on the SIGN UP button at the top right and create a user with account type "Owner" and Project Name "linuxjobber"
-5. After creating the user, go to the login page and login with the credentials of the user. The very first login attempt will give an error, but all subsequent attempts will succed. 
-6. After logging in, connect chatscrum to slack and pick a channel to post in (bin is available to everyone).
-7. Log back into chatscrum with the same credentials, click on "My Tasks" at the top, then "ADD TASK" at the bottom left to create a new task. You should see "Goal created success." at the bottom.
-8. Send a message in the Scrum Chat Messages. If the message appears in the slack channel and soon after in the Scrum Chat Messages itself, you have successfully deployed chatscrum.
+3. Connect to the same database used in step 5 and run the following commands in the MySQL database
+
+`use chat;`
+
+`select * from Scrum_chatscrumslackapp;`
+
+`INSERT INTO Scrum_chatscrumslackapp (SLACK_VERIFICATION_TOKEN, CLIENT_ID, CLIENT_SECRET) VALUES ("oeIAvaMSGyT0L96VtyCwKPpo", "516134588580.520839787655", "e97b4cdb649cd9768e5cc5759bb7764c");`
+
+4. Access chatscrum in a web browser at the domain you are using or at the IP address and port (your.chatscrum.com or ipaddress:5100 in a web browser)
+5. Click on the SIGN UP button at the top right and create a user with account type "Owner" and Project Name "linuxjobber"
+6. After creating the user, go to the login page and login with the credentials of the user. The very first login attempt will give an error, but all subsequent attempts will succed. 
+7. After logging in, do not connect chatscrum to slack.
+8. Log back into chatscrum with the same credentials, click on "My Tasks" at the top, then "ADD TASK" at the bottom left to create a new task. You should see "Goal created success." at the bottom. If you can move the task from the "Tasks for the week" box to the "Todays Target" box, and the move persists after a page refresh (Ctrl+F5), then you have successfully deployed chatscrum.
 
