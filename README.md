@@ -1,4 +1,4 @@
-# Building Chatscrum
+## Building Chatscrum
 To build Chatscrum from the source code into a docker image, follow these steps.
 1. Clone the chatscrum repo into the / directory (/scrumastr will be created by default, replace branch_name with the desired branch) and cd into it 
 
@@ -39,7 +39,8 @@ If the settings.py file is set like this
         'PASSWORD': '8iu7*IU&',
         'HOST': 'mysql-hostname-replace-with-correct-host',
 
-*** In the MySQL database you are connecting to, run these commands as root user (or the equivalent) before chatscrum is deployed:
+*** In the MySQL database you are connecting to, run these commands as root user (or the equivalent) before chatscrum is deployed (if on a kubernetes cluster,
+*** refer to the last section on how to create a mysql database in a cluster)
 
 `CREATE DATABASE IF NOT EXISTS chat;`
 
@@ -61,7 +62,7 @@ If the settings.py file is set like this
 
 `docker push username/chatscrum:example_tag`
 
-# Deploying Chatscrum
+## Deploying Chatscrum in Docker container
 To deploy the chatscrum docker image in a docker container, follow these steps
 1. Make sure that a database matching the values in step 5 of the build process is up and running
 2. Run the chatscrum image you have built
@@ -85,4 +86,24 @@ To deploy the chatscrum docker image in a docker container, follow these steps
 6. After creating the user, go to the login page and login with the credentials of the user. The very first login attempt will give an error, but all subsequent attempts will succed. 
 7. After logging in, do not connect chatscrum to slack.
 8. Log back into chatscrum with the same credentials, click on "My Tasks" at the top, then "ADD TASK" at the bottom left to create a new task. You should see "Goal created success." at the bottom. If you can move the task from the "Tasks for the week" box to the "Todays Target" box, and the move persists after a page refresh (Ctrl+F5), then you have successfully deployed chatscrum.
+
+## Deploying Chatscrum on a Kubernetes cluster
+To deploy the chatscrum docker image on a kubernetes instruction, you must first have an existing kubernetes cluster
+1. In the cs-deploy.yaml file, edit the image field with the chatscrum image you wish to deploy (image must be pushed to remote repository)
+2. On the node of the cluster, create the /opt/dockermounts directory, and place the configured settings.ini file 
+from chatscrum at /opt/dockermounts/settings_cs.ini and the configured settings.py at /opt/dockermounts/settings_cs.ini, both with 664 permissions
+*** creating a MySQL database on the kubernetes cluster
+3. Run the commands below to create the mysql database in a pod 
+```
+kubectl apply -f mysql-svc.yaml
+# Wait for the service to be created
+kubectl apply -f mysql-deploy.yaml
+```
+4. Run the below commands to create the chatscrum deployment on the cluster
+```
+kubectl apply -f cs-serv.yaml
+kubectl apply -f cs-deploy.yaml
+```
+5. Refer to step 5 in "Deploying Chatscrum in Docker container" and follow from there
+
 
