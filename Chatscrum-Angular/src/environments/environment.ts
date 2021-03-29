@@ -5,7 +5,7 @@
 export const environment = {
 	production: false,
 	domain_protocol: 'http://',
-	domain_name: 'localhost:8000',
+	domain_name: '3.142.120.241:80/django',
 	slack_client_id: '241971098774.1519168971767',
 	// slack_client_id: '1047148162967.1067254009940',
 	ws_url: 'wss://fizhjvoooe.execute-api.us-east-2.amazonaws.com/develop',
