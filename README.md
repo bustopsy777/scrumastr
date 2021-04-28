@@ -11,7 +11,9 @@ To build Chatscrum from the source code into a docker image, follow these steps.
 `cp build_files/* /scrumastr/`
 
 3. In the environment.ts file, edit the "domain_protocol" to the protocol of the backend domain and "domain_name" to the domain name of the chatscrum backend 
+
 4. In the settings.ini file, edit the "FRONTEND" line to the correct chatscrum frontend
+
 5. In the settings.py file, under "DATABASES = {", edit the NAME, USER, PASSWORD, and HOST values to valid credentials to access the MySQL database. This means that on the MySQL server at the ip/hostname specified in HOST, there needs to be a USER accessible remotely with PASSWORD with full permissions on the database called NAME. 
 
 *** If using a mysql database in a docker container on the same machine the chatscrum docker container will be, do the following:
@@ -50,15 +52,25 @@ If the settings.py file is set like this
 
 `GRANT ALL PRIVILEGES ON *.* TO 'linuxjobber'@'%' ;`
 
-6. Create an account at https://hub.docker.com/ (if necessary) and use those credentials to login to docker (optional step but recommended)
+6. Copy the Django/ScrumMaster/requirements2.txt file to the top directory of the repo as requirements.txt, and then add lines to install boto3, slack, and cryptography==3.3.2 to the end of the file. Edit the zope.interface and slackclient lines to install the latest version. (You can simply remove the specified version number to have the latest version of the package installed (eg. "slackclient" instead of "slackclient==2.9.3")) 
+
+`cp Django/ScrumMaster/requirements2.txt requirements.txt` 
+
+7. Create a directory named "www" and copy the Django and Chatscrum-Angular folders into the www folder
+
+`mkdir www`
+`cp -r Django/ www/`
+`cp -r Chatscrum-Angular/ www/` 
+
+8. Create an account at https://hub.docker.com/ (if necessary) and use those credentials to login to docker (optional step but recommended)
 
 `sudo docker login`
 
-7. Build the image using the docker build command while in the /scrumastr folder. Example:
+9. Build the image using the docker build command while in the /scrumastr folder. Example:
 
 `docker build -t username/chatscrum:example_tag .`
 
-8. Push the image that you just built to your docker hub repository (optional but recommended in case the local image is compromised or is not present)
+10. Push the image that you just built to your docker hub repository (optional but recommended in case the local image is compromised or is not present)
 
 `docker push username/chatscrum:example_tag`
 
@@ -69,7 +81,7 @@ To deploy the chatscrum docker image in a docker container, follow these steps
 
 `docker run --name cs-name -d -p 5000:5000 -p 5100:5100 username/chatscrum:example_tag`
 
-*** If using a docker container MySQL databse, run this command instead:
+*** If using a docker container MySQL databse running on the same machine, run this command instead:
 
 `docker run --name cs-name -d -p 5000:5000 -p 5100:5100 --net=chatscrum username/chatscrum:example_tag`
 
