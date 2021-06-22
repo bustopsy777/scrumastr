@@ -5,7 +5,7 @@ metadata:
   labels:
     type: local
 spec: 
-  storageClassName: manual
+  storageClassName: kops-ssd-1-17
   capacity: 
     storage: 10Gi
   accessModes:

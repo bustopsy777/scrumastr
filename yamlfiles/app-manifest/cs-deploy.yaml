@@ -1,4 +1,4 @@
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
@@ -15,11 +15,11 @@ spec:
   template:
     metadata:
       labels:
-        app: lcs
+        app: cs
         tier: frontend
     spec:
       containers:
-      - image: 
+      - image: jerito1/chatscrum:dev
         imagePullPolicy: Always
         name: cs
         ports:
