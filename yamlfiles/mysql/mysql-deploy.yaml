@@ -20,27 +20,26 @@ spec:
         tier: mysql
     spec:
       containers:
-      - env:
-        - name: MYSQL_ROOT_PASSWORD
-          value: 8iu7*IU&
-        image: mysql:8
-        imagePullPolicy: IfNotPresent
-        name: mysql
-        ports:
-        - containerPort: 3306
+        - env:
+            - name: MYSQL_ROOT_PASSWORD
+              value: 8iu7*IU&
+          image: mysql:8
+          imagePullPolicy: IfNotPresent
           name: mysql
-          protocol: TCP
-        resources: {}
-        volumeMounts:
-        - mountPath: /var/lib/mysql
-          name: mysql-persistent-storage
+          ports:
+            - containerPort: 3306
+              name: mysql
+              protocol: TCP
+          resources: {}
+          volumeMounts:
+            - mountPath: /var/lib/mysql
+              name: mysql-persistent-storage
       dnsPolicy: ClusterFirst
       restartPolicy: Always
       schedulerName: default-scheduler
       securityContext: {}
       terminationGracePeriodSeconds: 30
       volumes:
-      - name: mysql-persistent-storage
-        persistentVolumeClaim:
-          claimName: mysql-pv-claim
-
+        - name: mysql-persistent-storage
+          persistentVolumeClaim:
+            claimName: mysql-pv-claim

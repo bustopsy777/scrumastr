@@ -1,0 +1,47 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: cs
+  name: cs
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cs
+      tier: frontend
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: lcs
+        tier: frontend
+    spec:
+      containers:
+      - image: 
+        imagePullPolicy: Always
+        name: cs
+        ports:
+        - containerPort: 5100
+          protocol: TCP
+        - containerPort: 5000
+          name: cs
+          protocol: TCP
+        volumeMounts:
+        - mountPath: /web/www/Django/ScrumMaster/settings.ini
+          name: lj-settings
+          subPath: settings_cs.ini
+        - mountPath: /web/www/Django/ScrumMaster/ScrumMaster/settings.py
+          name: lj-settings
+          subPath: settings_cs.py
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - hostPath:
+          path: /opt/dockermounts
+          type: Directory
+        name: lj-settings
