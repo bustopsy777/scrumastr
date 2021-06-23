@@ -4,7 +4,6 @@ Chatscrum is a task management software. That allow users to giv track of their 
 built chat system which allows user to communicate with each other.
 
 ## Install Helm CLI
-
 ```
 curl -LO https://get.helm.sh/helm-v3.6.1-linux-amd64.tar.gz
 tar -C /tmp/ -zxvf helm-v3.6.1-linux-amd64.tar.gz
