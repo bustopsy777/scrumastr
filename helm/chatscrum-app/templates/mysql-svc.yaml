@@ -3,7 +3,7 @@ kind: Service
 metadata:
   labels:
     app: wt
-  name: wt-mysql
+  name: {{ .Values.database }}
 spec:
   clusterIP: None
   ports:

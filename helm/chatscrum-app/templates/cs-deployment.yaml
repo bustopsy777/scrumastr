@@ -2,31 +2,31 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app: cs
-  name: cs
+    app: {{ .Values.name }}
+  name: {{ .Values.name }}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: cs
+      app: {{ .Values.name }}
       tier: frontend
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        app: cs
+        app: {{ .Values.name }}
         tier: frontend
     spec:
       containers:
-      - image: {{ .Values.deployment.image }}:{{ .Values.deployment.tag }}
+      - image: {{.Values.deployment.image }}:{{ .Values.deployment.tag }}
         imagePullPolicy: Always
-        name: cs
+        name: {{ .Values.name }}
         ports:
         - containerPort: 5100
           protocol: TCP
         - containerPort: 5000
-          name: cs
+          name: {{ .Values.name }}
           protocol: TCP
         volumeMounts:
         - mountPath: /web/www/Django/ScrumMaster/settings.ini

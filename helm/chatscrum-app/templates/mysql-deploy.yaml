@@ -4,7 +4,7 @@ metadata:
   generation: 1
   labels:
     app: workntutor
-  name: wt-mysql
+  name: {{ .Values.database }}
 spec:
   replicas: 1
   selector:

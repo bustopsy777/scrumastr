@@ -81,7 +81,7 @@ image: `{{ .Values.deployment.image }}:{{ .Values.deployment.tag }}
 
 #upgrade our release
 
-helm upgrade chatscrum-app chatscrum --value ./chatscrum/values.yaml
+helm upgrade chatscrum-app chatscrum --values ./chatscrum/values.yaml
 
 #see revision increased
 

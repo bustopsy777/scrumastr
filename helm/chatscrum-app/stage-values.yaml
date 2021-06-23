@@ -3,7 +3,7 @@ deployment:
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: "dev"
-name: "cs"
+name: "cs-stage"
 
 database:
-  name: "wt-mysql"
+  name: "wt-mysql-stage"
