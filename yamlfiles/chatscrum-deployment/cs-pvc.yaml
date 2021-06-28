@@ -5,11 +5,11 @@ metadata:
   labels:
     type: local
 spec:
-  storageClassName: kops-ssd-1-17
+  storageClassName: gp2
   capacity:
     storage: 1Gi
   accessModes:
-    - ReadWriteOnce
+    - ReadWriteMany
   hostPath:
     path: "/opt/dockermounts"
 ---
@@ -18,8 +18,9 @@ kind: PersistentVolumeClaim
 metadata:
   name: cs-pvc-claim
 spec:
+  storageClassName: gp2
   accessModes:
-  - ReadWriteOnce
+  - ReadWriteMany
   resources:
     requests:
       storage: 1Gi

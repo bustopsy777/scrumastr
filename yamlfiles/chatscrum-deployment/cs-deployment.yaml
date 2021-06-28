@@ -30,10 +30,10 @@ spec:
               protocol: TCP
           volumeMounts:
             - mountPath: /web/www/Django/ScrumMaster/settings.ini
-              name: lj-settings
+              name: settings-ini
               subPath: settings_cs.ini
             - mountPath: /web/www/Django/ScrumMaster/ScrumMaster/settings.py
-              name: lj-settings
+              name: settings-py
               subPath: settings_cs.py
       dnsPolicy: ClusterFirst
       restartPolicy: Always
@@ -44,4 +44,12 @@ spec:
         - hostPath:
             path: /opt/dockermounts
             type: DirectoryOrCreate
-          name: lj-settings
+          name: settings-dir
+        - hostPath:
+            path: /opt/dockermounts/settings_cs.ini
+            type: FileOrCreate
+          name: settings-ini
+        - hostPath:
+            path: /opt/dockermounts/settings_cs.py
+            type: FileOrCreate
+          name: settings-py
