@@ -1,10 +1,11 @@
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: chatscrum-pv-volume
+  name: cs-pv-volume
   labels:
     type: local
 spec:
+  storageClassName: kops-ssd-1-17
   capacity:
     storage: 1Gi
   accessModes:
@@ -15,7 +16,7 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: hostpath
+  name: cs-pvc-claim
 spec:
   accessModes:
   - ReadWriteOnce
