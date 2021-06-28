@@ -58,6 +58,7 @@ RUN /bin/pip3.6 install Pillow channels_redis==2.4.0 pymysql
 RUN /bin/pip3.6 install boto3==1.11.0
 RUN /bin/pip3.6 install django==2.1
 RUN /bin/pip3.6 install python-decouple
+RUN /bin/pip3.6 install slackclient
 
 RUN mkdir -p /web/
 COPY www/ /web/www/
