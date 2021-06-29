@@ -4,11 +4,11 @@
 
 export const environment = {
   production: true,
-  domain_protocol:"http://",
-  domain_name: "54.149.246.18:30279",
+  domain_protocol: "http://",
+  domain_name: "35.166.32.196:31500",
   slack_client_id: "241971098774.1519168971767",
-  chat_ws_url : "wss://9oaktw3efg.execute-api.us-east-2.amazonaws.com/chat",
-  ws_url : "wss://fizhjvoooe.execute-api.us-east-2.amazonaws.com/develop",
+  chat_ws_url: "wss://9oaktw3efg.execute-api.us-east-2.amazonaws.com/chat",
+  ws_url: "wss://fizhjvoooe.execute-api.us-east-2.amazonaws.com/develop",
 };
 
 /*
