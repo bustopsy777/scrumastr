@@ -3,12 +3,13 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  production: true,
-  domain_protocol: "http://",
-  domain_name: "54.188.162.227:31500",
-  slack_client_id: "241971098774.1519168971767",
-  chat_ws_url: "wss://9oaktw3efg.execute-api.us-east-2.amazonaws.com/chat",
-  ws_url: "wss://fizhjvoooe.execute-api.us-east-2.amazonaws.com/develop",
+	production: false,
+	domain_protocol: 'http://',
+	domain_name: '3.142.120.241:80/django',
+	slack_client_id: '241971098774.1519168971767',
+	// slack_client_id: '1047148162967.1067254009940',
+	ws_url: 'wss://fizhjvoooe.execute-api.us-east-2.amazonaws.com/develop',
+	chat_ws_url: 'wss://9oaktw3efg.execute-api.us-east-2.amazonaws.com/chat',
 };
 
 /*
