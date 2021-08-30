@@ -1,9 +1,0 @@
-deployment:
-  image: "jerito1/chatscrum"
-  pullPolicy: IfNotPresent
-  # Overrides the image tag whose default is the chart appVersion.
-  tag: "dev"
-name: "cs"
-
-database:
-  name: "wt-mysql"
