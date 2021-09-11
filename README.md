@@ -119,6 +119,129 @@ kubectl apply -f cs-deploy.yaml
 5. Refer to step 5 in "Deploying Chatscrum in Docker container" and follow from there
 
 
+
+
+
+
+## Setup for Cent OS
+
+### Requirements
+
+* Install and Configure MYSQL (https://www.google.com/amp/s/www.cyberciti.biz/faq/how-to-install-mysql-server-on-centos-8-linux/). 
+
+* Download Install Python3 
+Install 3.6 and python3-pip
+(https://www.linode.com/docs/guides/how-to-install-python-on-centos-8/)
+
+* Install nodejs and npm 
+Use the link to install npm https://linuxconfig.org/how-to-install-npm-on-redhat-8
+
+* Install a Nginx web server
+https://www.google.com/amp/s/www.cyberciti.biz/faq/how-to-install-and-use-nginx-on-centos-8/
+
+* Install Git command line
+```
+dnf install git -y 
+
+```
+
+### Setup guide
+
+1. Run your server and clone the repository into your instance using the git clone command. 
+
+2. Start MySQL server:
+```
+sudo systemctl start mysql
+
+```
+3. Create a database
+Log into mysql and create a database
+```
+mysql> create database chatscrum;
+```
+
+NB: *** In the MySQL database you are connecting to, create a user (or the equivalent)***
+```
+CREATE USER IF NOT EXISTS 'chatuser'@'%' IDENTIFIED BY '8iu7*IU&' ;
+```
+```
+GRANT ALL PRIVILEGES ON *.* TO 'chatuser'@'%' ;
+```
+
+4. Copy the contents of the build_files folder into the scrumastr folder
+```
+cp build_files/* ~/scrumastr/
+```
+5. Copy the settings.py from scrumastr to Django folder 
+```
+cp -r settings.py Django/Scrumastr
+```
+
+6. Modify the settings.py and set your database credentials. look for the format below in the settings.py file.
+```
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'newcs',
+        'USER': '<Enter your username>',
+        'PASSWORD': '<Enter the Password>',
+        'HOST': '<Enter your database hostname>',
+        'PORT': '3306',
+        'OPTIONS': {
+            #'raise_on_warnings': False,
+            #'use_pure': True
+        }
+    }
+}
+```
+
+7. Install all required packages by running ``` sudo pip3 install -r requirements2.txt. ``` This will install all required packages within the virtual environment created.
+
+8. Navigate into /home/youruser/chatscrum/Django/ScrumMaster/ where manage.py is, and run ``` python3.6 manage.py makemigrations ``` to read all django models.
+
+9. Run ``` python3.6 manage.py migrate ``` to set up tables in your database.
+
+10. Run ``` python3.6 manage.py collectstatic ``` to collate static files
+Run ``` python3.6 manage.py createsuperuser --username <your-name> ``` and follow the prompt to create a superuser account.
+11. Start up the django server and create a record in the admin. Still in /home/youruser/chatscrum/Django/ScrumMaster/, run ``` python3 manage.py runserver 0.0.0.0:8000 ``` to start up the django server
+Navigate to [address]:8000/admin via your browser to access the django admin interface. Replace [address] with the IP address of your machine
+You will be needing a Chatscrum Slack Apps record in place before authentication can be carried out successfully. For now, log in and create a new record in Chatscrum Slack Apps. Fill in random contents in the three fields and save it. It will suffice.
+
+## Deploy Angular
+
+1. Using npm, install angular cli globally on your server: (``` sudo npm install -g @angular/cli@9 ```)
+
+2. Edit /home/youruser/chatscrum/Chatscrum-Angular/src/environments/environment.prod.ts and set your environment variables in environments.prod.ts as this is the file that production environment will take cognizance of. Value of the domain_name should be the actual elastic IP or hostname of your server. The domain_protocol + domain_name setup just points to our django app for communication with the Angular part: (you can see the content within environment.ts file which is in same directory as environments.prod.ts. The former is used in a development environment)
+
+3. Within the angular workspace directory (Chatscrum-Angular) where package.json exists, run ``` npm install``` from the terminal to install all required packages.
+
+4. Run ``` ng build --prod ```  from within the workspace directory. This will compile the Angular app into an output directory named ```dist/ ```. dist/ will contain chatscrum/ folder ready for production deployment.
+
+5. Edit the chatscrum.conf configuration file to add a new virtualhost (/etc/nginx/conf.d/chatscrum.conf):
+```
+server {
+	listern        80 default_server;
+	listern        [::]:80 default_server;
+	server_name    35.166.244.37;
+	root           /usr/share/nginx/html;
+	index          index.html;
+	try_files      $uri/index.html;
+}
+
+```
+NB: You can use any free port you desire. Replace ‘youruser’ with your username. In essence, The angular app will be served on PORT 80, while the Django app will be served on PORT 8000.
+
+6. Go to /etc/nginx/nginx.conf file and comment out  this lines
+```
+#listern  80 default_server;
+#listern  [::]:80 default_server;
+```
+7. Reload the nginx server after setting the configuration. ``` sudo nginx -s reload ```
+
+8. Visit http://<IP_ADDRESS>:80 via your browser: Replace <IP_ADDRESS> with the elastic IP or domain name of your server
+
+
+
 ## GUIDE FOR CHATSCRUM DEPLOYMENT ON WINDOWS SERVER 2016
 ### Prerequisites:
  1.  Create a gitlab account if you don’t have one already (https://gitlab.com)
