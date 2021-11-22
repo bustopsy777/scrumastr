@@ -11,7 +11,9 @@ To build Chatscrum from the source code into a docker image, follow these steps.
 `cp build_files/* /scrumastr/`
 
 
-3. In the settings.ini file, edit the "FRONTEND" line to the correct chatscrum frontend
+3. In the settings.ini file, edit the "FRONTEND" line to the correct chatscrum frontend.
+
+Refence https://gitlab.com/showpopulous/chatscrumangular.git  to get the FRONTEND url
 
 4. In the settings.py file, under "DATABASES = {", edit the NAME, USER, PASSWORD, and HOST values to valid credentials to access the MySQL database. This means that on the MySQL server at the ip/hostname specified in HOST, there needs to be a USER accessible remotely with PASSWORD with full permissions on the database called NAME. 
 
@@ -63,7 +65,6 @@ If the settings.py file is set like this
 7. Push the image that you just built to your docker hub repository (optional but recommended in case the local image is compromised or is not present)
 
 `docker push username/chatscrum:example_tag`
-
 
 ## Deploying Chatscrum in Docker container
 
