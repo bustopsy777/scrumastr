@@ -9,10 +9,6 @@ spec:
     app: cs
   type: NodePort
   ports:
-    - name: cs-frontend
-      port: 5100
-      targetPort: 5100
-      nodePort: 31510
     - name: cs-backend
       port: 5000
       targetPort: 5000
