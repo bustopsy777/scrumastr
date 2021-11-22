@@ -23,8 +23,6 @@ spec:
           imagePullPolicy: Always
           name: cs
           ports:
-            - containerPort: 5100
-              protocol: TCP
             - containerPort: 5000
               name: cs
               protocol: TCP
