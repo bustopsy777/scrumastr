@@ -59,7 +59,7 @@ RUN /bin/pip3.6 install django==2.1
 RUN /bin/pip3.6 install python-decouple
 
 RUN mkdir -p /web/
-COPY www/ /web/www/
+COPY Django/ScrumMaster /web/www/
 # COPY nginx.conf /etc/nginx/
 COPY start.sh /start.sh
 COPY settings.py /web/www/Django/ScrumMaster/ScrumMaster/settings.py
