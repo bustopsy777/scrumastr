@@ -55,6 +55,7 @@ requests==2.19.1
 requests-oauthlib==1.0.0
 selenium==3.14.0
 six==1.11.0
+
 slackclient
 slackeventsapi==2.1.0
 smmap2==2.0.4

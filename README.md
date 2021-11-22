@@ -51,25 +51,16 @@ If the settings.py file is set like this
 
 `GRANT ALL PRIVILEGES ON *.* TO 'linuxjobber'@'%' ;`
 
-5. Copy the Django/ScrumMaster/requirements2.txt file to the top directory of the repo as requirements.txt, and then add lines to install boto3, slack, and cryptography==3.3.2 to the end of the file. Edit the zope.interface and slackclient lines to install the latest version. (You can simply remove the specified version number to have the latest version of the package installed (eg. "slackclient" instead of "slackclient==2.9.3")) 
 
-`cp Django/ScrumMaster/requirements2.txt requirements.txt` 
-
-6. Create a directory named "www" and copy the Django and Chatscrum-Angular folders into the www folder
-
-`mkdir www`
-`cp -r Django/ www/`
-`cp -r Chatscrum-Angular/ www/` 
-
-7. Create an account at https://hub.docker.com/ (if necessary) and use those credentials to login to docker (optional step but recommended)
+5. Create an account at https://hub.docker.com/ (if necessary) and use those credentials to login to docker (optional step but recommended)
 
 `sudo docker login`
 
-8. Build the image using the docker build command while in the /scrumastr folder. Example:
+6. Build the image using the docker build command while in the /scrumastr folder. Example:
 
 `docker build -t username/chatscrum:example_tag .`
 
-9. Push the image that you just built to your docker hub repository (optional but recommended in case the local image is compromised or is not present)
+7. Push the image that you just built to your docker hub repository (optional but recommended in case the local image is compromised or is not present)
 
 `docker push username/chatscrum:example_tag`
 
