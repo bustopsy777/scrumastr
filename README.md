@@ -66,6 +66,11 @@ If the settings.py file is set like this
 
 `docker push username/chatscrum:example_tag`
 
+8. Create a django admin user. Go into the container and run the command below.
+`python3 manage.py createsuperuser`
+
+9. Login in with the user from the browser. Ensure your container is running before trying to login
+
 ## Deploying Chatscrum in Docker container
 
 To deploy the chatscrum docker image in a docker container, follow these steps
