@@ -43,7 +43,7 @@ If the settings.py file is set like this
         'HOST': 'mysql-hostname-replace-with-correct-host',
 
 *** In the MySQL database you are connecting to, run these commands as root user (or the equivalent) before chatscrum is deployed (if on a kubernetes cluster,
-*** refer to the last section on how to create a mysql database in a cluster)
+*** refer to the last section on how to create a mysql database in a cluster. If deploying to ECS, kindly create an RDS Mysql instance and setup your database in it)
 
 `CREATE DATABASE IF NOT EXISTS chat;`
 
