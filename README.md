@@ -42,7 +42,7 @@ If the settings.py file is set like this
         'HOST': 'mysql-hostname-replace-with-correct-host',
 
 *** In the MySQL database you are connecting to, run these commands as root user (or the equivalent) before chatscrum is deployed (if on a kubernetes cluster,
-*** refer to the last section on how to create a mysql database in a cluster)
+*** refer to the last section on how to create a mysql database in a cluster). 
 
 `CREATE DATABASE IF NOT EXISTS chat;`
 
@@ -51,6 +51,8 @@ If the settings.py file is set like this
 `CREATE USER IF NOT EXISTS 'linuxjobber'@'%' IDENTIFIED BY '8iu7*IU&' ;`
 
 `GRANT ALL PRIVILEGES ON *.* TO 'linuxjobber'@'%' ;`
+
+***If you're going to be deploying to AWS ECS, then follow the guide in this link https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_CreateDBInstance.html to setup a "MYSQL" RDS Instance(Set it up using free tier, except this is going to be production). In the "initial database name" section, enter the name of the database you want to use in the settings.py file. This will ensure that the database is created at the instance creation time. Test that you can connect to the database from the command line using the command "mysql -h <RDS_DNS_NAME> -u <Initial_username> -P <port_you_chose_at_instance_creation> -p", and hit enter. You will get a prompt for a password, enter the password and hit enter. If you successfully connect to the instance, edit the settings.py file above, replacing host with the DNS Name of your RDS Instance, replace user with your username and password with the password you used to connect. If you are unable to connect to the instance, try editing the security group to allow access from anywhere (0.0.0.0/0).
 
 6. Copy the Django/ScrumMaster/requirements2.txt file to the top directory of the repo as requirements.txt, and then add lines to install boto3, slack, and cryptography==3.3.2 to the end of the file. Edit the zope.interface and slackclient lines to install the latest version. (You can simply remove the specified version number to have the latest version of the package installed (eg. "slackclient" instead of "slackclient==2.9.3")) 
 
@@ -468,6 +470,55 @@ This will help apache point back to index.html whenever a url endpoint without a
 5.  Visit http://<IP_ADDRESS>:8080 via your browser:
 Replace <IP_ADDRESS> with the elastic IP or domain name of your server
 
+## Deploying Chatscrum in AWS ECS
+To deploy the chatscrum docker image in ECS, follow these steps:
+
+1. Ensure you already have an ECS cluster running. For this we recommend using the Fargate cluster type. If you do not have a cluster already set up, then follow these steps to set it up:
+In the navigation pane, choose Clusters.
+
+- On the Clusters page, choose Create cluster.
+
+- Under Cluster configuration, for Cluster name, enter a unique name.
+
+- The name can contain up to 255 letters (uppercase and lowercase), numbers, and hyphens.
+
+- (Optional) To change the VPC and subnets where your tasks and services launch, under Networking, perform any of the following operations:
+
+        To remove s subnet, under Subnets, choose X for each subnet that you want to remove.
+
+        To change to a VPC other than the default VPC, under VPC, choose an existing VPC, and   then under Subnets, select each subnet.
+
+- (Optional) To turn on Container Insights, expand Monitoring, and then turn on Use Container Insights.
+
+- (Optional) To manage the cluster tags, expand Tags, and then perform one of the following operations:
+
+        [Add a tag] Choose Add tag and do the following:
+
+        For Key, enter the key name.
+
+        For Value, enter the key value.
+
+        [Remove a tag] Choose Remove to the right of the tag’s Key and Value.
+
+- Choose Create. Refer to the documentation: https://docs.aws.amazon.com/AmazonECS/latest/developerguide/create_cluster.html, if you get a view not aligned with the steps above, to set up a Fargate cluster.
+
+2. When the cluster is created, set up a Task definition file, which is quite similar to a manifest file in Kubernetes. In the image section of the task definition, enter in the Image URI for your image, this will differ depending on the repository you pushed your image to. For the port, use port 5100.
+
+3. If you will like to use a load balancer for your services/task, then setup an application load balancer, listeners and target groups, which you will connect to your service/task.
+
+4. Set up a service in the cluster you created, and base it on the task definition you created in step 2, ensure that you add your container to the Load balancer in the Load balancer section, if you want to use a load balancer.
+
+5. When the task in your service show up as running, confirm that you can access the application using the DNS of your load balancer, in the format DNS_NAME:5100. This should return a Django Admin page. If this does not return a response, ensure that the Security Group of the load balancer is open for connections from the internet on Port 5100.
+
+6. When the application loads up, connect again, to your RDS instance which you set up and run the following commands in the MySQL database:
+
+`use chat;`
+
+`select * from Scrum_chatscrumslackapp;`
+
+`INSERT INTO Scrum_chatscrumslackapp (SLACK_VERIFICATION_TOKEN, CLIENT_ID, CLIENT_SECRET) VALUES ("oeIAvaMSGyT0L96VtyCwKPpo", "516134588580.520839787655", "e97b4cdb649cd9768e5cc5759bb7764c");`
+
+7. If you notice that your tasks are being restarted or you're unable to still connect to the application after opening up port 5100 on the security group of your Load balancer, confirm from the task logs, the error leading to the restart of the tasks.
 
 
 
