@@ -1,22 +1,16 @@
-## Building Chatscrum
-To build Chatscrum from the source code into a docker image, follow these steps.
-1. Clone the chatscrum repo into the / directory (/scrumastr will be created by default, replace branch_name with the desired branch) and cd into it 
+# Overview
+This guide is divided into two parts, the first part will walk you through creating the Chatscrum image, and the second part will walk you through deploying containers built from the image on different platforms. 
 
-`git clone https://gitlab.com/showpopulous/scrumastr.git -b branch_name`
+# Table of Content
+1. Setting Up the database
+2. Building the Chatscrum Image
+3. Deploying chatscrum
 
-`cd /scrumastr`
 
-2. Copy the contents of the build_files folder into the scrumastr folder
+### 1. Setting up the Database
+Chatscrum uses implements a MySQL database, and this guide covers three deployment methods for Chatscrum, which include deployment on Docker, deployment on Kubernetes and deployment on ECS. Depending on the method you choose, you will need to set up a MySQL database which can be accessed easily.
 
-`cp build_files/* /scrumastr/`
-
-3. In the environment.ts file, edit the "domain_protocol" to the protocol of the backend domain and "domain_name" to the domain name of the chatscrum backend 
-
-4. In the settings.ini file, edit the "FRONTEND" line to the correct chatscrum frontend
-
-5. In the settings.py file, under "DATABASES = {", edit the NAME, USER, PASSWORD, and HOST values to valid credentials to access the MySQL database. This means that on the MySQL server at the ip/hostname specified in HOST, there needs to be a USER accessible remotely with PASSWORD with full permissions on the database called NAME. 
-
-*** If using a mysql database in a docker container on the same machine the chatscrum docker container will be, do the following:
+***a. If you will be deploying using Docker then follow these steps to set up your database:***
 
 `sudo docker pull mysql/mysql-server:latest`
 
@@ -34,15 +28,31 @@ To build Chatscrum from the source code into a docker image, follow these steps.
 
 `sudo docker exec -it mysql-cs mysql -uroot -p`
 
-If the settings.py file is set like this
+`CREATE DATABASE IF NOT EXISTS chat;`
 
-        'NAME': 'chat',
-        'USER': 'linuxjobber',
-        'PASSWORD': '8iu7*IU&',
-        'HOST': 'mysql-hostname-replace-with-correct-host',
+`use chat;`
 
-*** In the MySQL database you are connecting to, run these commands as root user (or the equivalent) before chatscrum is deployed (if on a kubernetes cluster,
-*** refer to the last section on how to create a mysql database in a cluster). 
+`CREATE USER IF NOT EXISTS 'linuxjobber'@'%' IDENTIFIED BY '8iu7*IU&' ;`
+
+`GRANT ALL PRIVILEGES ON *.* TO 'linuxjobber'@'%' ;`
+
+***b. If you're going to be deploying to AWS ECS, then follow the guide in this link https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_CreateDBInstance.html to setup a "MYSQL" RDS Instance(Set it up using free tier, except this is going to be production).***
+
+`In the "initial database name" section, enter any name of your choice and remember this name because it will be used in a later step.This will ensure that the database is created at the instance creation time.`
+
+`Test that you can connect to the database from the command line using the command "mysql -h <RDS_DNS_NAME> -u <Initial_username> -P <port_you_chose_at_instance_creation> -p", and hit enter`.
+
+`You will get a prompt for a password, enter the password and hit enter.`
+
+`If you are unable to connect to the instance, try editing the security group to allow access from anywhere (0.0.0.0/0) or from the IP address of the server from which you are trying to connect.`
+
+`Upon successful connection, confirm you can see the data base you created using the command: "show databases;"`
+
+***c. If you want to deploy Chatscrum on a Kubernetes cluster, please refer to this guide: https://phoenixnap.com/kb/kubernetes-mysql to set up a MySQL Database in your Kubernetes cluster***
+
+`Post deployment of the MySQL Pod, connect to it using the command "kubectl exec --stdin --tty <id_of_the_sql_pod> -- /bin/bash"`
+
+`Run the command "mysql -p" and you will get the mysql prompt, repeat the following steps to create a database`
 
 `CREATE DATABASE IF NOT EXISTS chat;`
 
@@ -52,31 +62,71 @@ If the settings.py file is set like this
 
 `GRANT ALL PRIVILEGES ON *.* TO 'linuxjobber'@'%' ;`
 
-***If you're going to be deploying to AWS ECS, then follow the guide in this link https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_CreateDBInstance.html to setup a "MYSQL" RDS Instance(Set it up using free tier, except this is going to be production). In the "initial database name" section, enter the name of the database you want to use in the settings.py file. This will ensure that the database is created at the instance creation time. Test that you can connect to the database from the command line using the command "mysql -h <RDS_DNS_NAME> -u <Initial_username> -P <port_you_chose_at_instance_creation> -p", and hit enter. You will get a prompt for a password, enter the password and hit enter. If you successfully connect to the instance, edit the settings.py file above, replacing host with the DNS Name of your RDS Instance, replace user with your username and password with the password you used to connect. If you are unable to connect to the instance, try editing the security group to allow access from anywhere (0.0.0.0/0).
 
-6. Copy the Django/ScrumMaster/requirements2.txt file to the top directory of the repo as requirements.txt, and then add lines to install boto3, slack, and cryptography==3.3.2 to the end of the file. Edit the zope.interface and slackclient lines to install the latest version. (You can simply remove the specified version number to have the latest version of the package installed (eg. "slackclient" instead of "slackclient==2.9.3")) 
+### 2. Building the Chatscrum Image
+
+To build Chatscrum from the source code into a docker image, follow these steps.
+
+***a. Clone the chatscrum repo into the / directory (/scrumastr will be created by default, replace branch_name with the desired branch) and cd into it*** 
+
+`git clone https://gitlab.com/showpopulous/scrumastr.git -b branch_name`
+
+`cd /scrumastr`
+
+***b. Copy the contents of the build_files folder into the scrumastr folder***
+
+`cp build_files/* /scrumastr/`
+
+***c. In the environment.ts file, edit the "domain_protocol" to the protocol of the backend domain and "domain_name" to the domain name of the chatscrum backend*** 
+
+***d. In the settings.ini file, edit the "FRONTEND" line to the correct chatscrum frontend***
+
+***e. In the settings.py file, under "DATABASES = {", edit the NAME, USER, PASSWORD, and HOST values to valid credentials to access the MySQL database. This means that on the MySQL server at the ip/hostname specified in HOST, there needs to be a USER accessible remotely with PASSWORD with full permissions on the database called NAME.***
+
+Given the format: 
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'newcs',
+        'USER': 'linuxjobber',
+        'PASSWORD': '1qaz#EDC3edc',
+        'HOST': 'wt-mysql',
+        'PORT': '3306',
+        'OPTIONS': {
+            #'raise_on_warnings': False,
+            #'use_pure': True
+        }
+    }
+}
+
+*** If you set up your database in a docker container, "HOST" will be the MySQL container name, if you set it up using RDS, then it will be the DNS name of your RDS instance, usually in the format "db1.123456789012.us-east-1.rds.amazonaws.com". If you set up in a Kubernetes pod, the host name will be the name of the Service created in the C section of the "Setting Up the Database" instructions. Username and Password will be the 'linuxjobber' and '8iu7*IU& respectively, except you entered your own custom values at creation time. 
+
+***f. Copy the Django/ScrumMaster/requirements2.txt file to the top directory of the repo as requirements.txt, and then add lines to install boto3, slack, and cryptography==3.3.2 to the end of the file. Edit the zope.interface and slackclient lines to install the latest version. (You can simply remove the specified version number to have the latest version of the package installed (eg. "slackclient" instead of "slackclient==2.9.3"))*** 
 
 `cp Django/ScrumMaster/requirements2.txt requirements.txt` 
 
-7. Create a directory named "www" and copy the Django and Chatscrum-Angular folders into the www folder
+***g. Create a directory named "www" and copy the Django and Chatscrum-Angular folders into the www folder***
 
 `mkdir www`
 `cp -r Django/ www/`
 `cp -r Chatscrum-Angular/ www/` 
 
-8. Create an account at https://hub.docker.com/ (if necessary) and use those credentials to login to docker (optional step but recommended)
+***h. Create an account at https://hub.docker.com/ (if necessary) and use those credentials to login to docker (optional step but recommended)***
 
 `sudo docker login`
 
-9. Build the image using the docker build command while in the /scrumastr folder. Example:
+***i. Build the image using the docker build command while in the /scrumastr folder. Example:***
 
 `docker build -t username/chatscrum:example_tag .`
 
-10. Push the image that you just built to your docker hub repository (optional but recommended in case the local image is compromised or is not present)
+***j. Push the image that you just built to your docker hub repository (optional but recommended in case the local image is compromised or is not present)***
 
 `docker push username/chatscrum:example_tag`
 
-## Deploying Chatscrum in Docker container
+### 3. Deploying Chatscrum 
+
+in Docker container
 To deploy the chatscrum docker image in a docker container, follow these steps
 1. Make sure that a database matching the values in step 5 of the build process is up and running
 2. Run the chatscrum image you have built
