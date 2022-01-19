@@ -141,7 +141,7 @@ DATABASES = {
 
 *** If using a docker container MySQL databse running on the same machine, run this command instead:
 
-`docker run --name cs-name -d -p 5000:5000 -p 5100:5100 --net=chatscrum username/chatscrum:example_tag`
+`docker run --name cs-name -d -p 5000:5000 --net=chatscrum username/chatscrum:example_tag`
 
 - Connect to the same database used and run the following commands in the MySQL database
 

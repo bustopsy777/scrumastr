@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: cs-pv-volume
+  labels:
+    type: local
+spec:
+  storageClassName: gp2
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteMany
+  hostPath:
+    path: "/opt/dockermounts"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: cs-pvc-claim
+spec:
+  storageClassName: gp2
+  accessModes:
+  - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi
