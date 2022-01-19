@@ -2,9 +2,10 @@
 This guide is divided into two parts, the first part will walk you through creating the Chatscrum image, and the second part will walk you through deploying containers built from the image on different platforms. 
 
 # Table of Content
-1. Setting Up the database
-2. Building the Chatscrum Image
-3. Deploying chatscrum
+* [Setting up the Database](#setting-up-the-database)
+* [Building the Chatscrum Image](#Building the Chatscrum Image)
+* [Deploying Chatscrum](#Deploying Chatscrum)
+
 
 
 ### 1. Setting up the Database
