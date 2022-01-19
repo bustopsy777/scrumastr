@@ -8,7 +8,7 @@ This guide is divided into two parts, the first part will walk you through creat
 
 
 
-### 1. Setting up the Database
+## 1. Setting up the Database
 Chatscrum uses implements a MySQL database, and this guide covers three deployment methods for Chatscrum, which include deployment on Docker, deployment on Kubernetes and deployment on ECS. Depending on the method you choose, you will need to set up a MySQL database which can be accessed easily.
 
 ***a. If you will be deploying using Docker then follow these steps to set up your database:***
@@ -64,7 +64,7 @@ Chatscrum uses implements a MySQL database, and this guide covers three deployme
 `GRANT ALL PRIVILEGES ON *.* TO 'linuxjobber'@'%' ;`
 
 
-### 2. Building the Chatscrum Image
+## 2. Building the Chatscrum Image
 
 To build Chatscrum from the source code into a docker image, follow these steps.
 
@@ -129,7 +129,7 @@ DATABASES = {
 `docker push username/chatscrum:example_tag`
 
 
-### 3. Deploying Chatscrum 
+## 3. Deploying Chatscrum 
 
 ***a. To deploy the chatscrum docker image in a docker container, follow these steps***
 
