@@ -1,22 +1,17 @@
-## Building Chatscrum
-To build Chatscrum from the source code into a docker image, follow these steps.
-1. Clone the chatscrum repo into the / directory (/scrumastr will be created by default, replace branch_name with the desired branch) and cd into it 
+# Overview
+This guide is divided into two parts, the first part will walk you through creating the Chatscrum image, and the second part will walk you through deploying containers built from the image on different platforms. 
 
-`git clone https://gitlab.com/showpopulous/scrumastr.git -b branch_name`
+## Table of Content
+* [Setting up the Database](#1-setting-up-the-database)
+* [Building the Chatscrum Image](#2-building-the-chatscrum-image)
+* [Deploying Chatscrum](#3-deploying-chatscrum)
 
-`cd /scrumastr`
 
-2. Copy the contents of the build_files folder into the scrumastr folder
 
-`cp build_files/* /scrumastr/`
+## 1. Setting up the Database
+Chatscrum uses implements a MySQL database, and this guide covers three deployment methods for Chatscrum, which include deployment on Docker, deployment on Kubernetes and deployment on ECS. Depending on the method you choose, you will need to set up a MySQL database which can be accessed easily.
 
-3. In the environment.ts file, edit the "domain_protocol" to the protocol of the backend domain and "domain_name" to the domain name of the chatscrum backend 
-
-4. In the settings.ini file, edit the "FRONTEND" line to the correct chatscrum frontend
-
-5. In the settings.py file, under "DATABASES = {", edit the NAME, USER, PASSWORD, and HOST values to valid credentials to access the MySQL database. This means that on the MySQL server at the ip/hostname specified in HOST, there needs to be a USER accessible remotely with PASSWORD with full permissions on the database called NAME. 
-
-*** If using a mysql database in a docker container on the same machine the chatscrum docker container will be, do the following:
+***a. If you will be deploying using Docker then follow these steps to set up your database:***
 
 `sudo docker pull mysql/mysql-server:latest`
 
@@ -34,15 +29,31 @@ To build Chatscrum from the source code into a docker image, follow these steps.
 
 `sudo docker exec -it mysql-cs mysql -uroot -p`
 
-If the settings.py file is set like this
+`CREATE DATABASE IF NOT EXISTS chat;`
 
-        'NAME': 'chat',
-        'USER': 'linuxjobber',
-        'PASSWORD': '8iu7*IU&',
-        'HOST': 'mysql-hostname-replace-with-correct-host',
+`use chat;`
 
-*** In the MySQL database you are connecting to, run these commands as root user (or the equivalent) before chatscrum is deployed (if on a kubernetes cluster,
-*** refer to the last section on how to create a mysql database in a cluster). 
+`CREATE USER IF NOT EXISTS 'linuxjobber'@'%' IDENTIFIED BY '8iu7*IU&' ;`
+
+`GRANT ALL PRIVILEGES ON *.* TO 'linuxjobber'@'%' ;`
+
+***b. If you're going to be deploying to AWS ECS, then follow the guide in this link https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_CreateDBInstance.html to setup a "MYSQL" RDS Instance(Set it up using free tier, except this is going to be production).***
+
+`In the "initial database name" section, enter any name of your choice and remember this name because it will be used in a later step.This will ensure that the database is created at the instance creation time.`
+
+`Test that you can connect to the database from the command line using the command "mysql -h <RDS_DNS_NAME> -u <Initial_username> -P <port_you_chose_at_instance_creation> -p", and hit enter`.
+
+`You will get a prompt for a password, enter the password and hit enter.`
+
+`If you are unable to connect to the instance, try editing the security group to allow access from anywhere (0.0.0.0/0) or from the IP address of the server from which you are trying to connect.`
+
+`Upon successful connection, confirm you can see the data base you created using the command: "show databases;"`
+
+***c. If you want to deploy Chatscrum on a Kubernetes cluster, please refer to this guide: https://phoenixnap.com/kb/kubernetes-mysql to set up a MySQL Database in your Kubernetes cluster***
+
+`Post deployment of the MySQL Pod, connect to it using the command "kubectl exec --stdin --tty <id_of_the_sql_pod> -- /bin/bash"`
+
+`Run the command "mysql -p" and you will get the mysql prompt, repeat the following steps to create a database`
 
 `CREATE DATABASE IF NOT EXISTS chat;`
 
@@ -52,42 +63,87 @@ If the settings.py file is set like this
 
 `GRANT ALL PRIVILEGES ON *.* TO 'linuxjobber'@'%' ;`
 
-***If you're going to be deploying to AWS ECS, then follow the guide in this link https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_CreateDBInstance.html to setup a "MYSQL" RDS Instance(Set it up using free tier, except this is going to be production). In the "initial database name" section, enter the name of the database you want to use in the settings.py file. This will ensure that the database is created at the instance creation time. Test that you can connect to the database from the command line using the command "mysql -h <RDS_DNS_NAME> -u <Initial_username> -P <port_you_chose_at_instance_creation> -p", and hit enter. You will get a prompt for a password, enter the password and hit enter. If you successfully connect to the instance, edit the settings.py file above, replacing host with the DNS Name of your RDS Instance, replace user with your username and password with the password you used to connect. If you are unable to connect to the instance, try editing the security group to allow access from anywhere (0.0.0.0/0).
 
-6. Copy the Django/ScrumMaster/requirements2.txt file to the top directory of the repo as requirements.txt, and then add lines to install boto3, slack, and cryptography==3.3.2 to the end of the file. Edit the zope.interface and slackclient lines to install the latest version. (You can simply remove the specified version number to have the latest version of the package installed (eg. "slackclient" instead of "slackclient==2.9.3")) 
+## 2. Building the Chatscrum Image
+
+To build Chatscrum from the source code into a docker image, follow these steps.
+
+***a. Clone the chatscrum repo into the / directory (/scrumastr will be created by default, replace branch_name with the desired branch) and cd into it*** 
+
+`git clone https://gitlab.com/showpopulous/scrumastr.git -b branch_name`
+
+`cd /scrumastr`
+
+***b. Copy the contents of the build_files folder into the scrumastr folder***
+
+`cp build_files/* /scrumastr/`
+
+***c. In the environment.ts file, edit the "domain_protocol" to the protocol of the backend domain and "domain_name" to the domain name of the chatscrum backend*** 
+
+***d. In the settings.ini file, edit the "FRONTEND" line to the correct chatscrum frontend***
+
+***e. In the settings.py file, under "DATABASES = {", edit the NAME, USER, PASSWORD, and HOST values to valid credentials to access the MySQL database. This means that on the MySQL server at the ip/hostname specified in HOST, there needs to be a USER accessible remotely with PASSWORD with full permissions on the database called NAME.***
+
+Given the format: 
+
+```
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql', '\n'
+        'NAME': 'newcs',
+        'USER': 'linuxjobber',
+        'PASSWORD': '1qaz#EDC3edc',
+        'HOST': 'wt-mysql',
+        'PORT': '3306',
+        'OPTIONS': {
+            #'raise_on_warnings': False,
+            #'use_pure': True
+        }
+    }
+}
+
+```
+
+*** If you set up your database in a docker container, "HOST" will be the MySQL container name, if you set it up using RDS, then it will be the DNS name of your RDS instance, usually in the format "db1.123456789012.us-east-1.rds.amazonaws.com". If you set up in a Kubernetes pod, the host name will be the name of the Service created in the C section of the "Setting Up the Database" instructions. Username and Password will be the 'linuxjobber' and '8iu7*IU& respectively, except you entered your own custom values at creation time. 
+
+***f. Copy the Django/ScrumMaster/requirements2.txt file to the top directory of the repo as requirements.txt, and then add lines to install boto3, slack, and cryptography==3.3.2 to the end of the file. Edit the zope.interface and slackclient lines to install the latest version. (You can simply remove the specified version number to have the latest version of the package installed (eg. "slackclient" instead of "slackclient==2.9.3"))*** 
 
 `cp Django/ScrumMaster/requirements2.txt requirements.txt` 
 
-7. Create a directory named "www" and copy the Django and Chatscrum-Angular folders into the www folder
+***g. Create a directory named "www" and copy the Django and Chatscrum-Angular folders into the www folder***
 
 `mkdir www`
 `cp -r Django/ www/`
 `cp -r Chatscrum-Angular/ www/` 
 
-8. Create an account at https://hub.docker.com/ (if necessary) and use those credentials to login to docker (optional step but recommended)
+***h. Create an account at https://hub.docker.com/ (if necessary) and use those credentials to login to docker (optional step but recommended)***
 
 `sudo docker login`
 
-9. Build the image using the docker build command while in the /scrumastr folder. Example:
+***i. Build the image using the docker build command while in the /scrumastr folder. Example:***
 
 `docker build -t username/chatscrum:example_tag .`
 
-10. Push the image that you just built to your docker hub repository (optional but recommended in case the local image is compromised or is not present)
+***j. Push the image that you just built to your docker hub repository (optional but recommended in case the local image is compromised or is not present)***
 
 `docker push username/chatscrum:example_tag`
 
-## Deploying Chatscrum in Docker container
-To deploy the chatscrum docker image in a docker container, follow these steps
-1. Make sure that a database matching the values in step 5 of the build process is up and running
-2. Run the chatscrum image you have built
 
-`docker run --name cs-name -d -p 5000:5000 -p 5100:5100 username/chatscrum:example_tag`
+## 3. Deploying Chatscrum 
+
+***a. To deploy the chatscrum docker image in a docker container, follow these steps***
+
+- Make sure that a database matching the values in Section a of the Database setup is up and running
+
+- Run the chatscrum image you have built using the below command, replacing "<username/chatscrum:example_tag>" with the image name you built.
+
+`docker run --name cs-name -d -p 5000:5000 -p 5100:5100 <username/chatscrum:example_tag>`
 
 *** If using a docker container MySQL databse running on the same machine, run this command instead:
 
 `docker run --name cs-name -d -p 5000:5000 -p 5100:5100 --net=chatscrum username/chatscrum:example_tag`
 
-3. Connect to the same database used in step 5 and run the following commands in the MySQL database
+- Connect to the same database used and run the following commands in the MySQL database
 
 `use chat;`
 
@@ -95,47 +151,47 @@ To deploy the chatscrum docker image in a docker container, follow these steps
 
 `INSERT INTO Scrum_chatscrumslackapp (SLACK_VERIFICATION_TOKEN, CLIENT_ID, CLIENT_SECRET) VALUES ("oeIAvaMSGyT0L96VtyCwKPpo", "516134588580.520839787655", "e97b4cdb649cd9768e5cc5759bb7764c");`
 
-4. Access chatscrum in a web browser at the domain you are using or at the IP address and port (your.chatscrum.com or ipaddress:5100 in a web browser)
-5. Click on the SIGN UP button at the top right and create a user with account type "Owner" and Project Name "linuxjobber"
-6. After creating the user, go to the login page and login with the credentials of the user. The very first login attempt will give an error, but all subsequent attempts will succed. 
-7. After logging in, do not connect chatscrum to slack.
-8. Log back into chatscrum with the same credentials, click on "My Tasks" at the top, then "ADD TASK" at the bottom left to create a new task. You should see "Goal created success." at the bottom. If you can move the task from the "Tasks for the week" box to the "Todays Target" box, and the move persists after a page refresh (Ctrl+F5), then you have successfully deployed chatscrum.
+- Access chatscrum in a web browser at the domain you are using or at the IP address and port (your.chatscrum.com or ipaddress:5100 in a web browser).
 
-## Deploying Chatscrum on a Kubernetes cluster
+- Click on the SIGN UP button at the top right and create a user with account type "Owner" and Project Name "linuxjobber"
+
+- After creating the user, go to the login page and login with the credentials of the user. The very first login attempt will give an error, but all subsequent attempts will succed. 
+
+- After logging in, do not connect chatscrum to slack.
+
+- Log back into chatscrum with the same credentials, click on "My Tasks" at the top, then "ADD TASK" at the bottom left to create a new task. You should see "Goal created success." at the bottom. If you can move the task from the "Tasks for the week" box to the "Todays Target" box, and the move persists after a page refresh (Ctrl+F5), then you have successfully deployed chatscrum.
+
+***b. Deploying Chatscrum on a Kubernetes cluster***
+
 To deploy the chatscrum docker image on a kubernetes instruction, you must first have an existing kubernetes cluster
-1. In the cs-deploy.yaml file, edit the image field with the chatscrum image you wish to deploy (image must be pushed to remote repository)
-2. On the node of the cluster, create the /opt/dockermounts directory, and place the configured settings.ini file 
+
+- In the cs-deploy.yaml file, edit the image field with the chatscrum image you wish to deploy (image must be pushed to remote repository).
+
+- On the node of the cluster, create the /opt/dockermounts directory, and place the configured settings.ini file 
 from chatscrum at /opt/dockermounts/settings_cs.ini and the configured settings.py at /opt/dockermounts/settings_cs.ini, both with 664 permissions
-*** creating a MySQL database on the kubernetes cluster
-3. Run the commands below to create the mysql database in a pod 
-```
-kubectl apply -f mysql-svc.yaml
-# Wait for the service to be created
-kubectl apply -f mysql-deploy.yaml
-```
-4. Run the below commands to create the chatscrum deployment on the cluster
+
+- Run the below commands to create the chatscrum deployment on the cluster
 ```
 kubectl apply -f cs-serv.yaml
 kubectl apply -f cs-deploy.yaml
 ```
-5. Refer to step 5 in "Deploying Chatscrum in Docker container" and follow from there
+- Refer to step 5 in "Deploying Chatscrum in Docker container" and follow from there
 
-
-## GUIDE FOR CHATSCRUM DEPLOYMENT ON WINDOWS SERVER 2016
+***c. GUIDE FOR CHATSCRUM DEPLOYMENT ON WINDOWS SERVER 2016***
 ### Prerequisites:
- 1.  Create a gitlab account if you don’t have one already (https://gitlab.com)
-2.   You should have an accessible EC2 machine running Microsoft Windows server 2016
-3.   You should have Internet Information Service (IIS) installed and configured on the server. Ensure that CGI application development role service is installed along. If you have carried out IIS installation before now without ticking CGI service, perform a feature-based installation and have it installed.
-4.  You should have `URL Rewrite` (An IIS extension) installed on your server. https://www.iis.net/downloads/microsoft/url-rewrite
-5.   Download and install `git` for windows on your server
-6.   Download and install a code editor you can use on your server. E.g.`Visual Studio Code`
-7.   You should have `MySQL` installed and configured on the server. (The Chatscrum application uses MySQL database). https://mid.as/kb/00145/install-configure-mysql-on-windows#download-mysql
-8.  You should have `node` installed and configured on your server: https://phoenixnap.com/kb/install-node-js-npm-on-windows
-9.   Use `git` to get the chatscrum project source code from the repo onto your server (Request for access to the project repo)
+-  Create a gitlab account if you don’t have one already (https://gitlab.com)
+-   You should have an accessible EC2 machine running Microsoft Windows server 2016
+-   You should have Internet Information Service (IIS) installed and configured on the server. Ensure that CGI application development role service is installed along. If you have carried out IIS installation before now without ticking CGI service, perform a feature-based installation and have it installed.
+-  You should have `URL Rewrite` (An IIS extension) installed on your server. https://www.iis.net/downloads/microsoft/url-rewrite
+-   Download and install `git` for windows on your server
+-   Download and install a code editor you can use on your server. E.g.`Visual Studio Code`
+-   You should have `MySQL` installed and configured on the server. (The Chatscrum application uses MySQL database). https://mid.as/kb/00145/install-configure-mysql-on-windows#download-mysql
+-  You should have `node` installed and configured on your server: https://phoenixnap.com/kb/install-node-js-npm-on-windows
+-   Use `git` to get the chatscrum project source code from the repo onto your server (Request for access to the project repo)
 NOTE:
 Linuxjobber’s chatscrum application has two major parts. There is the Angular part that handles the frontend view of the application. Then there is the Django path that handles routing and communication with the MySQL database. We will be going through the deployment of both.
  
-### Deploying the Django part to IIS
+***d. Deploying the Django part to IIS***
 1. Log into mysql and create a database
 ```bash
 mysql> create database chatscrum;
@@ -256,7 +312,7 @@ Navigate to http://localhost/django (or http://IP-address/django or https://doma
 * Navigate to http://IP-address/django/admin and login with your superuser credentials. You will be needing a Chatscrum Slack App record in place before authentication can be carried out successfully. For now, fill in random content in the three fields. It will suffice.
  
 
-### Deploying the Angular Part on IIS
+***e. Deploying the Angular Part on IIS***
  
 1.  Prep your application for production deployment:
 * One thing to note in this step has to do with paths specified in your html files. Preceding paths with a forward slash (/) will not work in production environment, so it is necessary you remove all preceding slashes in reference paths and hrefs. This option will work well in development, as well as production environment. Use the code editor to edit the codes.
@@ -300,14 +356,9 @@ Navigate to http://localhost/django (or http://IP-address/django or https://doma
 * From the IIS console, add a new application to the default website. Name it `chatscrum`, and select the `C:/chatscrum` as the physical path. Also select the application pool created in (4). 
 
 6.  Visit [IP ADDRESS]/chatscrum/ via your browser:
-* Replace [IP ADDRESS] with the IP of your server. Or if you have configured a domain name, navigate to https://<domain>/chatscrum 
-   
- 
+* Replace [IP ADDRESS] with the IP of your server. Or if you have configured a domain name, navigate to https://<domain>/chatscrum  
 
- 
- 
-
-## GUIDE FOR CHATSCRUM DEPLOYMENT ON LINUX SERVER 
+***f. GUIDE FOR CHATSCRUM DEPLOYMENT ON LINUX SERVER***
 ### Prerequisites:
 * In order to complete this guide, you should have a fresh CentOS 8 server instance with a non-root user with sudo privileges configured (Instance type: t2.medium atleast)
 * Allow all traffic in your server’s security group if you are using AWS EC2 machines
@@ -317,7 +368,7 @@ Navigate to http://localhost/django (or http://IP-address/django or https://doma
 NOTE:
 Linuxjobber’s chatscrum application has two major parts. There is the Angular part that handles the frontend view of the application. Then there is the Django path that handles routing and communication with the MySQL database. 
  
-### Deploying the Django part to Linux server
+***g. Deploying the Django part to Linux server***
 1. Log into mysql and create a database
 ```bash
 mysql> create database chatscrum;
@@ -423,11 +474,7 @@ def execfile(filepath, globals=None, locals=None):
 
   
 
- 
-
-
-
-### Deploying the Angular Part (Linux server)
+***g. Deploying the Angular Part (Linux server)***
 1.  Prep your server environment: 
 * Install and configure node and npm on your server: https://linuxize.com/post/how-to-install-node-js-on-centos-7/
 * Using npm, install angular cli globally on your server: (sudo npm install -g @angular/cli@9)
@@ -470,7 +517,8 @@ This will help apache point back to index.html whenever a url endpoint without a
 5.  Visit http://<IP_ADDRESS>:8080 via your browser:
 Replace <IP_ADDRESS> with the elastic IP or domain name of your server
 
-## Deploying Chatscrum in AWS ECS
+***h. Deploying Chatscrum in AWS ECS***
+
 To deploy the chatscrum docker image in ECS, follow these steps:
 
 1. Ensure you already have an ECS cluster running. For this we recommend using the Fargate cluster type. If you do not have a cluster already set up, then follow these steps to set it up:
@@ -478,35 +526,178 @@ In the navigation pane, choose Clusters.
 
 - On the Clusters page, choose Create cluster.
 
+
 - Under Cluster configuration, for Cluster name, enter a unique name.
+
 
 - The name can contain up to 255 letters (uppercase and lowercase), numbers, and hyphens.
 
+
 - (Optional) To change the VPC and subnets where your tasks and services launch, under Networking, perform any of the following operations:
 
-        To remove s subnet, under Subnets, choose X for each subnet that you want to remove.
+```
 
-        To change to a VPC other than the default VPC, under VPC, choose an existing VPC, and   then under Subnets, select each subnet.
+To remove a subnet, under Subnets, choose X for each subnet that you want to remove.
+
+To change to a VPC other than the default VPC, under VPC, choose an existing VPC, and   then under Subnets, select each subnet.
+
+```
+
 
 - (Optional) To turn on Container Insights, expand Monitoring, and then turn on Use Container Insights.
 
+
 - (Optional) To manage the cluster tags, expand Tags, and then perform one of the following operations:
 
-        [Add a tag] Choose Add tag and do the following:
+```
 
-        For Key, enter the key name.
+[Add a tag] Choose Add tag and do the following:
 
-        For Value, enter the key value.
+   For Key, enter the key name.
 
-        [Remove a tag] Choose Remove to the right of the tag’s Key and Value.
+   For Value, enter the key value.
+
+[Remove a tag] Choose Remove to the right of the tag’s Key and Value.
+
+```
+
 
 - Choose Create. Refer to the documentation: https://docs.aws.amazon.com/AmazonECS/latest/developerguide/create_cluster.html, if you get a view not aligned with the steps above, to set up a Fargate cluster.
 
+
 2. When the cluster is created, set up a Task definition file, which is quite similar to a manifest file in Kubernetes. In the image section of the task definition, enter in the Image URI for your image, this will differ depending on the repository you pushed your image to. For the port, use port 5100.
 
-3. If you will like to use a load balancer for your services/task, then setup an application load balancer, listeners and target groups, which you will connect to your service/task.
 
-4. Set up a service in the cluster you created, and base it on the task definition you created in step 2, ensure that you add your container to the Load balancer in the Load balancer section, if you want to use a load balancer.
+3. If you will like to use a load balancer for your services/task, then setup an application load balancer, listeners and target groups, which you will connect to your service/task, by following the below steps:
+ 
+- Go to the EC2 Console in AWS.
+
+
+- From the left-hand menu, expand Load Balancing and select Load balancers.
+
+
+- Click Create Load balancer, and under Application Load Balancer, click Create.
+
+
+- Set the Basic configuration properties:
+
+```
+Load Balancer Name: Enter a name for the load balancer.
+
+Scheme: Select Internet-facing.
+    
+IP address type: Select IPv4. Note that an elastic IP is not required. If you select assigned by AWS, use the DNS name when creating the gateway token.
+
+Set the Network Mapping properties:
+    
+    VPC: Select the VPC where this ECS gateway will be hosted.
+    
+    Mappings: Select the availability zone where you want the load balancer to be hosted (i.e., where the public subnet resides).
+
+Set the Listeners and routing properties:
+    
+    Port: Select TCP port 5100. Note that 5100 is the default TCP port specified for the Django part of the application.
+    
+    Create target group: Click the link, which will open a new tab.
+    
+    On the Specify group details page that opens
+        
+        Target type: Select IP Addresses as the target group.
+        
+        Target group name: Set the name of the target group.
+        
+        Port: Set TCP port 5100 for the listener. This port needs to match the port you plan to expose on the Fargate container.
+
+```
+
+- Click Next.
+
+
+- On the next page, leave the options blank and click Create target group. Note that a target will be set later once the ECS container is created.
+
+
+- Go back to the Load Balancers properties page, and click the refresh button next to Target group.
+
+
+- Select the target group that was just created.
+
+
+- Click Create load balancer.
+
+
+- Click View load balancers, and copy the ALB DNS name of the ALB that you just created.
+
+
+4. Set up a service in the cluster you created, and base it on the task definition you created in step 2, ensure that you add your container to the Load balancer in the Load balancer section, if you want to use a load balancer, using the below steps:
+
+- On the Clusters Management page, click your cluster name. On that page, click the Services tab and then click Create.
+
+
+- On the Create Service page that opens:
+
+```
+Launch type: Select FARGATE.
+
+Task Definition: Select the task definition created earlier.
+
+Service name: Enter a name for this service.
+    
+Number of tasks: Set 1.
+    
+Minimum healthy percent: Set 0.
+
+Maximum healthy percent: Set 100.
+
+Deployment type: Set Rolling update.
+
+Click Next step.
+
+```
+
+
+- On the Configure network page:
+
+```
+Cluster VPC: Select the Fargate VPC where the cluster is hosted.
+
+Subnets: Select a private subnet. Without this, the NLB will not be able to reach the container (e.g., 10.0.7.0/24).
+
+Security Groups: Click Edit and do the following:
+    Click Create a new security group.
+        In Basic details:
+            Security group name: Name the group.
+            Description: Describe what the group is for.
+            VPC: Select the VPC.
+            Under Inbound rules:
+            Type: Choose Custom TCP.
+            Port range: Choose the port (e.g., "5100") you are mapping from the load balancer to the service.
+           Source: Choose Anywhere. Please note: The load balancer is only open on the ports you forward, and the service is on a private network. You can, however, specify the IP address or range of the load balancer if you prefer. We recommend starting with an open security group for testing; you can modify it later.
+           Click Create security group.
+```
+
+- Auto-assign public IP: Set to ENABLED
+
+- Load balancer type: Select Application Load Balancer.
+
+- Load balancer name: Select the ALB that you created earlier.
+
+- Click Add to load balancer.
+
+- Production listener port: Select 5100 TCP.
+
+- These steps also enable the Health check grace period field. Scroll up and enter a value of 600 (seconds), for a 10-minute grace period.
+
+- Click Next step.
+
+- On the Set Auto Scaling page:
+
+- Make sure that Auto-scaling is set to Do not adjust the service’s desired count.
+
+- Click Next step.
+
+- Click Create Service.
+
+- Click View Service
 
 5. When the task in your service show up as running, confirm that you can access the application using the DNS of your load balancer, in the format DNS_NAME:5100. This should return a Django Admin page. If this does not return a response, ensure that the Security Group of the load balancer is open for connections from the internet on Port 5100.
 
