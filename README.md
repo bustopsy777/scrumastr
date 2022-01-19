@@ -3,8 +3,8 @@ This guide is divided into two parts, the first part will walk you through creat
 
 # Table of Content
 * [Setting up the Database](#setting-up-the-database)
-* [Building the Chatscrum Image](#Building the Chatscrum Image)
-* [Deploying Chatscrum](#Deploying Chatscrum)
+* [Building the Chatscrum Image](#Building-the-Chatscrum-Image)
+* [Deploying Chatscrum](#Deploying-Chatscrum)
 
 
 
