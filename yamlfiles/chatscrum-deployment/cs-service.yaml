@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: cs
+  labels:
+    app: cs
+spec:
+  selector:
+    app: cs
+  type: NodePort
+  ports:
+    - name: cs-backend
+      port: 5000
+      targetPort: 5000
+      nodePort: 31500

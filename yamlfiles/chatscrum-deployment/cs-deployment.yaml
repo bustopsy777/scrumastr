@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: cs
+  name: cs
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cs
+      tier: frontend
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: cs
+        tier: frontend
+    spec:
+      containers:
+        - image: 
+          imagePullPolicy: Always
+          name: cs
+          ports:
+            - containerPort: 5000
+              name: cs
+              protocol: TCP
+          volumeMounts:
+            - mountPath: /web/www/Django/ScrumMaster/settings.ini
+              name: settings-ini
+              subPath: settings_cs.ini
+            - mountPath: /web/www/Django/ScrumMaster/ScrumMaster/settings.py
+              name: settings-py
+              subPath: settings_cs.py
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+      volumes:
+        - hostPath:
+            path: /opt/dockermounts
+            type: DirectoryOrCreate
+          name: settings-dir
+        - hostPath:
+            path: /opt/dockermounts/settings_cs.ini
+            type: FileOrCreate
+          name: settings-ini
+        - hostPath:
+            path: /opt/dockermounts/settings_cs.py
+            type: FileOrCreate
+          name: settings-py
