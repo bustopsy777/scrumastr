@@ -1,6 +1,9 @@
 # Overview
 This guide is divided into two parts, the first part will walk you through creating the Chatscrum image, and the second part will walk you through deploying containers built from the image on different platforms. 
 
+NOTE!!!
+This repo contains the source code and necessary steps to build the backend of the application. A separate Repository exists which covers building the frontend as well as deployment and it is contained at https://gitlab.com/showpopulous/chatscrumangular/-/tree/int. Post deploying the backend, follow the Readme in the chatscrumangular Repo to ensure you deploy the frontend as well.
+
 ## Table of Content
 * [Setting up the Database](#1-setting-up-the-database)
 * [Building the Chatscrum Image](#2-building-the-chatscrum-image)
