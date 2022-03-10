@@ -1,6 +1,13 @@
 # Overview
 This guide is divided into two parts, the first part will walk you through creating the Chatscrum image, and the second part will walk you through deploying containers built from the image on different platforms. 
 
+# NOTE!!!
+The Chatscrum applications is based on the Microservices architecture. It is split into two Microservices (The frontend and the backend).
+
+1. The backend microservice, located in this repo deployment instructions given below, will assist with building the backend microservice as well as deployment using any of the preferred listed methods.
+
+2. The frontend microservice, is contained in a separate repostiory located at: https://gitlab.com/showpopulous/chatscrumangular/-/tree/int. Post deployment of the backend microservice, follow the Readme in the chatscrumangular Repo to ensure you deploy the frontend as well.
+
 ## Table of Content
 * [Setting up the Database](#1-setting-up-the-database)
 * [Building the Chatscrum Image](#2-building-the-chatscrum-image)
