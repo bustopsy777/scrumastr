@@ -400,6 +400,7 @@ This references the folder where static files will be collected at when manage.p
 * Activate the virtual environment (`source /home/youruser/chatscrum/Django/ScrumMaster/venv/bin/activate`)
 * Edit _/home/youruser/chatscrum/Django/ScrumMaster/requirements2.txt_: add comment out `mysqlclient` package as it won’t be needed; `pymysql` was used instead. Replace `slackclient` version with the latest version. Replace `zope.interface` with the latest version. (You can simply remove the specified version number to have the latest version of the package installed ‘==xxx’)
 * Install all required packages by running `sudo pip3.7 install -r requirements2.txt`. This will install all required packages within the virtual environment created. 
+* If you face issues with the step above resulting from an error due to the module, "pymysql" please try to install it using "sudo yum install python3-pymysql"
 * Navigate into /home/youruser/chatscrum/Django/ScrumMaster/ where `manage.py` is, and run `python3.7 manage.py makemigrations` to read all django models
 * Run `python3.7 manage.py migrate` to set up tables in your database
 * Run `python3.7 manage.py createsuperuser --username <your-name>` and follow the prompt to create a superuser account.
