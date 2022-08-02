@@ -403,7 +403,6 @@ This references the folder where static files will be collected at when manage.p
 * If you face issues with the step above resulting from an error due to the module, "pymysql" please try to install it using "sudo yum install python3-pymysql"
 * Navigate into /home/youruser/chatscrum/Django/ScrumMaster/ where `manage.py` is, and run `python3.7 manage.py makemigrations` to read all django models
 * Run `python3.7 manage.py migrate` to set up tables in your database
-* Run `python3.7 manage.py collectstatic` to collate static files 
 * Run `python3.7 manage.py createsuperuser --username <your-name>` and follow the prompt to create a superuser account.
 * Start up the django server and create a record in the admin. Still in /home/youruser/chatscrum/Django/ScrumMaster/, run `python3 manage.py runserver 0.0.0.0:8000` to start up the django server
 * Navigate to `[address]:8000/admin` via your browser to access the django admin interface. Replace [address] with the IP address of your machine
@@ -483,12 +482,25 @@ def execfile(filepath, globals=None, locals=None):
   
 
 ***g. Deploying the Angular Part (Linux server)***
+The Angular Part, is contained in a separate repostiory located at: https://gitlab.com/showpopulous/chatscrumangular/-/tree/int. Please clone the repo, checkout to the int branch and follow the instructions below:
+
 1.  Prep your server environment: 
 * Install and configure node and npm on your server: https://linuxize.com/post/how-to-install-node-js-on-centos-7/
 * Using npm, install angular cli globally on your server: (sudo npm install -g @angular/cli@9)
 
 2.  Prep your application for production deployment:
-* Edit _/home/youruser/chatscrum/Chatscrum-Angular/src/environments/environment.prod.ts_ and set your environment variables in `environments.prod.ts` as this is the file that production environment will take cognizance of. Value of the `domain_name` should be the actual elastic IP or hostname of your server. The `domain_protocol` + `domain_name` setup just points to our django app for communication with the Angular part: (you can see the content within `environment.ts` file which is in same directory as environments.prod.ts. The former is used in a development environment)
+* Modify a file named `.env`
+
+`sudo vi .env`
+
+Inside this file set the following variables
+```
+AWS_ACCESS_KEY_ID=<id>
+AWS_SECRET_ACCESS_KEY=<key>
+AWS_DEFAULT_REGION=<region>
+```
+Save the file
+* Edit _/home/youruser/chatscrum/Chatscrumangular/project/src/environments/environment.prod.ts_ and set your environment variables in `environments.prod.ts` as this is the file that production environment will take cognizance of. Value of the `domain_name` should be the actual elastic IP or hostname of your server. The `domain_protocol` + `domain_name` setup just points to our django app for communication with the Angular part: (you can see the content within `environment.ts` file which is in same directory as environments.prod.ts. The former is used in a development environment)
 
 * Within the angular workspace directory (Chatscrum-Angular) where package.json exists, run `npm install` from the terminal to install all required packages. 
 * Run `ng build --prod`  from within the workspace directory. This will compile the Angular app into an output directory named `dist/`. _dist/_ will contain chatscrum/ folder ready for production deployment.
