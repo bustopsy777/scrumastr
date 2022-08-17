@@ -77,19 +77,17 @@ To build Chatscrum from the source code into a docker image, follow these steps.
 
 ***a. Clone the chatscrum repo into the / directory (/scrumastr will be created by default, replace branch_name with the desired branch) and cd into it*** 
 
-`git clone https://gitlab.com/showpopulous/scrumastr.git -b branch_name`
+`git clone https://gitlab.com/showpopulous/scrumastr.git`
 
 `cd /scrumastr`
 
 ***b. Copy the contents of the build_files folder into the scrumastr folder***
 
-`cp build_files/* /scrumastr/`
+`cp build_files/* .` 
 
-***c. In the environment.ts file, edit the "domain_protocol" to the protocol of the backend domain and "domain_name" to the domain name of the chatscrum backend*** 
+***d. In the settings.ini file, edit the "FRONTEND" line to the correct chatscrum frontend(This ideally would be the domain name pointed to your Elastic IP address without the api. That is yourname.chatscrum.com)***
 
-***d. In the settings.ini file, edit the "FRONTEND" line to the correct chatscrum frontend***
-
-***e. In the settings.py file, under "DATABASES = {", edit the NAME, USER, PASSWORD, and HOST values to valid credentials to access the MySQL database. This means that on the MySQL server at the ip/hostname specified in HOST, there needs to be a USER accessible remotely with PASSWORD with full permissions on the database called NAME.***
+***e. In the settings.py file, under "DATABASES = {", edit the NAME, USER, PASSWORD, and HOST values to valid credentials to access the MySQL database. The details expected here are those from Step 1 above (Setting up the Database) More information on this are provided below. This means that on the MySQL server at the ip/hostname specified in HOST, there needs to be a USER accessible remotely with PASSWORD with full permissions on the database called NAME.***
 
 Given the format: 
 
@@ -117,11 +115,10 @@ DATABASES = {
 
 `cp Django/ScrumMaster/requirements2.txt requirements.txt` 
 
-***g. Create a directory named "www" and copy the Django and Chatscrum-Angular folders into the www folder***
+***g. Create a directory named "www" and copy the Django folder into the www folder***
 
 `mkdir www`
-`cp -r Django/ www/`
-`cp -r Chatscrum-Angular/ www/` 
+`cp -r Django/ www/` 
 
 ***h. Create an account at https://hub.docker.com/ (if necessary) and use those credentials to login to docker (optional step but recommended)***
 
