@@ -1,4 +1,4 @@
-23
+2
 # Overview
 This guide is divided into two parts, the first part will walk you through creating the Chatscrum image, and the second part will walk you through deploying containers built from the image on different platforms. 
 
